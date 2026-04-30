@@ -40,7 +40,7 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
     
     let runner = new Date(globalBase + 'T00:00:00');
     if (isNaN(runner.getTime())) runner = new Date();
-    
+
     if (!tasks) return result;
     const safeFoldedIds = (foldedIds instanceof Set) ? foldedIds : new Set();
 
@@ -49,6 +49,7 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
         const fullId = parentId ? `${parentId}.${tid}` : tid;
         const parts = fullId.split('.');
         
+        // Explicit dates override the current runner
         if (t.start) {
             const parsedStart = new Date(t.start + 'T00:00:00');
             if (!isNaN(parsedStart.getTime())) runner = parsedStart;
@@ -58,8 +59,7 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
         const hasChildren = (childrenArr && childrenArr.length > 0);
         const isFolded = safeFoldedIds.has(fullId);
         
-        // Resolve color here to avoid O(N) searching in renderer
-        const taskColor = t.color || inheritedColor || '#4a9eff';
+        const taskColor = t.color || inheritedColor || '#f4902c';
 
         const taskEntry = { 
             name: t.name,
@@ -94,7 +94,7 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
             const children = result.slice(startIdx + 1);
             if (children.length > 0) {
                 const validDates = children
-                    .map(c => [new Date(c.calculatedStart), new Date(c.calculatedEnd)])
+                    .map(c => [new Date(c.calculatedStart + 'T00:00:00'), new Date(c.calculatedEnd + 'T00:00:00')])
                     .flat()
                     .filter(d => !isNaN(d.getTime()));
 
@@ -108,11 +108,15 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
             }
         } else {
             const d = (t.duration !== undefined) ? t.duration : 1;
-            const end = new Date(runner); end.setDate(end.getDate() + d);
-            taskEntry.calculatedEnd = safeISODate(end);
+            const start = new Date(runner); 
+            const endObj = new Date(start); 
+            endObj.setDate(endObj.getDate() + d);
+            taskEntry.calculatedEnd = safeISODate(endObj);
             taskEntry.duration = d;
             result.push(taskEntry);
         }
+        
+        // Waterfall logic: move runner to the end of the current task
         const nextStart = new Date(taskEntry.calculatedEnd + 'T00:00:00');
         if (!isNaN(nextStart.getTime())) runner = nextStart;
     });

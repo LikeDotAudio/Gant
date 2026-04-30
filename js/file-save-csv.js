@@ -7,10 +7,10 @@ export async function saveCSV(projectData, showStatus) {
             baseDate: projectData.baseDate 
         });
 
-        let csv = "Root,Parent,Child,Sibling,Name,Start,End,Progress,Dependency\n";
+        let csv = "ID,Color,Dependency,Task Name,Progress,Start,Duration\n";
         flat.forEach(t => {
             const name = t.name.replace(/"/g, '""');
-            csv += `"${t.wbs_root}","${t.wbs_parent}","${t.wbs_child}","${t.wbs_sibling}","${name}","${t.calculatedStart}","${t.calculatedEnd}","${t.progress || 0}","${t.dependency || ''}"\n`;
+            csv += `"${t.fullId}","${t.color || ''}","${t.dependency || ''}","${name}","${t.progress || 0}","${t.calculatedStart}","${t.duration || 1}"\n`;
         });
 
         if (projectData.milestones && projectData.milestones.length > 0) {

@@ -19,6 +19,23 @@ import { saveCSV } from './file-save-csv.js';
 // Initialize Web Worker
 const worker = new Worker('js/worker.js', { type: 'module' });
 let currentRequestId = 0;
+let firstLoad = true;
+
+function autoZoom() {
+    const container = document.getElementById('gantt-container');
+    if (!container) return;
+    const viewportWidth = container.clientWidth;
+    // Sticky columns total width is ~850px based on CSS variables
+    const stickyWidthPx = 850; 
+    const timelineWidth = viewportWidth - stickyWidthPx;
+    
+    if (timelineWidth > 200) {
+        // Target 28 days (4 weeks)
+        let targetZoom = Math.floor(timelineWidth / 28);
+        // Keep within reasonable bounds
+        state.zoomLevel = Math.max(20, Math.min(100, targetZoom));
+    }
+}
 
 worker.onmessage = (e) => {
     const { action, result, requestId, error } = e.data;
@@ -33,6 +50,12 @@ worker.onmessage = (e) => {
         state.flatTasks = result.flat;
         state.projectMin = result.min;
         state.projectMax = result.max;
+
+        if (firstLoad && state.flatTasks.length > 0) {
+            autoZoom();
+            firstLoad = false;
+        }
+        
         renderGantt(state.projectData, state.zoomLevel, state.foldedIds, state.selectedTaskFullId, el.ganttChart, state.flatTasks, true, state.projectMin, state.projectMax);
     }
  else if (action === 'refreshed') {
@@ -136,6 +159,24 @@ function setupEventListeners() {
         el.ganttChart.addEventListener('mousedown', handleGanttMouseDown);
         el.ganttChart.addEventListener('dblclick', handleGanttDblClick);
         
+        // Hover Guide logic
+        el.ganttChart.addEventListener('mousemove', (e) => {
+            const isTimeline = e.target.closest('.gantt-timeline') || e.target.closest('.task-bars-cell');
+            const hoverLine = el.ganttChart.querySelector('.hover-line');
+            if (isTimeline && hoverLine) {
+                const rect = el.ganttChart.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                hoverLine.style.left = `${x}px`;
+                hoverLine.style.display = 'block';
+            } else if (hoverLine) {
+                hoverLine.style.display = 'none';
+            }
+        });
+        el.ganttChart.addEventListener('mouseleave', () => {
+            const hoverLine = el.ganttChart.querySelector('.hover-line');
+            if (hoverLine) hoverLine.style.display = 'none';
+        });
+        
         // Drag and Drop reordering
         el.ganttChart.addEventListener('dragstart', handleGanttDragStart);
         el.ganttChart.addEventListener('dragover', handleGanttDragOver);
@@ -179,9 +220,6 @@ function handleGanttClick(e) {
         case 'editColor':
             window.app.editTask(id, e);
             break;
-        case 'addMilestone':
-            window.app.addMilestone(e, actionEl.dataset.minDate);
-            break;
     }
 }
 
@@ -208,6 +246,15 @@ function handleGanttMouseDown(e) {
 }
 
 function handleGanttDblClick(e) {
+    const target = e.target;
+    const actionEl = target.dataset.action ? target : target.closest('[data-action]');
+    const action = actionEl?.dataset.action;
+
+    if (action === 'addMilestone') {
+        window.app.addMilestone(e, actionEl.dataset.minDate);
+        return;
+    }
+
     const row = e.target.closest('.gantt-row');
     const bar = e.target.closest('.bar');
     const id = row?.dataset.id || bar?.dataset.id;
@@ -294,9 +341,9 @@ function handleKeyboard(e) {
 
     if (changed) {
         e.preventDefault();
-        worker.postMessage({ action: 'refreshIds', payload: { roots: state.projectData.roots, requestId: ++currentRequestId } });
-        // Note: selectedTaskFullId might change, but we can't easily find it until worker returns.
-        // For now, we'll let it be null or stale until next render.
+        gantt.refreshIds(state.projectData.roots);
+        state.selectedTaskFullId = gantt.findFullId(state.projectData.roots, taskToMove);
+        render(true);
     }
 }
 
@@ -373,7 +420,8 @@ window.app = {
             const result = del.deleteTask(state.projectData.roots, state.selectedTaskFullId);
             if (result.changed) {
                 state.selectedTaskFullId = null;
-                worker.postMessage({ action: 'refreshIds', payload: { roots: state.projectData.roots, requestId: ++currentRequestId } });
+                gantt.refreshIds(state.projectData.roots);
+                render(true);
                 showStatus(`Deleted ${result.name}`);
             }
         };
@@ -392,18 +440,24 @@ window.app = {
     
     addAbove() {
         if (!state.selectedTaskFullId) { showStatus("No task selected.", true); return; }
+        const taskToTrack = gantt.findTask(state.projectData.roots, state.selectedTaskFullId);
         const result = add.addAbove(state.projectData.roots, state.selectedTaskFullId);
         if (result.changed) {
-            worker.postMessage({ action: 'refreshIds', payload: { roots: state.projectData.roots, requestId: ++currentRequestId } });
+            gantt.refreshIds(state.projectData.roots);
+            state.selectedTaskFullId = gantt.findFullId(state.projectData.roots, taskToTrack);
+            render(true);
             showStatus(`Added task above.`);
         }
     },
 
     addBelow() {
         if (!state.selectedTaskFullId) { showStatus("No task selected.", true); return; }
+        const taskToTrack = gantt.findTask(state.projectData.roots, state.selectedTaskFullId);
         const result = add.addBelow(state.projectData.roots, state.selectedTaskFullId);
         if (result.changed) {
-            worker.postMessage({ action: 'refreshIds', payload: { roots: state.projectData.roots, requestId: ++currentRequestId } });
+            gantt.refreshIds(state.projectData.roots);
+            state.selectedTaskFullId = gantt.findFullId(state.projectData.roots, taskToTrack);
+            render(true);
             showStatus(`Added task below.`);
         }
     },
@@ -421,7 +475,9 @@ window.app = {
         let targetChildren = gantt.getChildren(target);
         if (!targetChildren) { targetChildren = []; gantt.setChildren(target, targetChildren); target.type = "summary"; }
         targetChildren.push(task);
-        worker.postMessage({ action: 'refreshIds', payload: { roots: state.projectData.roots, requestId: ++currentRequestId } });
+        gantt.refreshIds(state.projectData.roots);
+        state.selectedTaskFullId = gantt.findFullId(state.projectData.roots, task);
+        render(true);
     },
 
     startBarDrag(e, fullId, mode) { pb.startBarDrag(e, fullId, mode, state, render); },
@@ -434,6 +490,7 @@ window.app = {
     updateTask(fullId, field, value) {
         const task = gantt.findTask(state.projectData.roots, fullId); if (!task) return;
         if (field === 'start') task.start = value;
+        else if (field === 'progress') task.progress = parseInt(value) || 0;
         else if (field === 'duration') task.duration = parseInt(value) || 0;
         else if (field === 'end') {
             const flatTask = state.flatTasks.find(ft => ft.fullId === fullId);

@@ -40,22 +40,29 @@ export function startMilestoneDrag(e, index, projectData, zoomLevel, render) {
     const container = e.target.closest('.milestone-container');
     if (!container) return;
 
+    // Prevent text selection and other interactions during drag
+    document.body.style.cursor = 'ew-resize';
+    container.style.zIndex = '1000'; // Bring to front during drag
+
     const move = (me) => {
         const deltaX = me.clientX - startX;
-        // Direct DOM update of the container position (Butter Smooth)
         container.style.transform = `translateX(${deltaX}px)`;
     };
 
     const up = (me) => {
         window.removeEventListener('mousemove', move);
         window.removeEventListener('mouseup', up);
+        document.body.style.cursor = '';
+        container.style.zIndex = '';
 
         const dayDelta = Math.round((me.clientX - startX) / zoomLevel);
-        const newDate = new Date(originalDate);
-        newDate.setDate(newDate.getDate() + dayDelta);
-        milestone.date = newDate.toISOString().split('T')[0];
+        if (dayDelta !== 0) {
+            const newDate = new Date(originalDate);
+            newDate.setDate(newDate.getDate() + dayDelta);
+            milestone.date = newDate.toISOString().split('T')[0];
+        }
         
-        // Final re-render to snap to grid and update date labels
+        container.style.transform = '';
         render();
     };
 

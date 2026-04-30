@@ -58,7 +58,7 @@ export function renderSpreadsheet(projectData, container, cachedFlat = null) {
     h += `</tbody></table>`;
 
     if (projectData.milestones && projectData.milestones.length > 0) {
-        h += `<h3 style="margin-top: 30px; color: #4a9eff; font-size: 1.1em; border-bottom: 1px solid #333; padding-bottom: 5px;">Project Milestones</h3>
+        h += `<h3 style="margin-top: 30px; color: #f4902c; font-size: 1.1em; border-bottom: 1px solid #333; padding-bottom: 5px;">Project Milestones</h3>
         <table style="width:100%; border-collapse: collapse; color: #ccc; font-size: 0.85em; background: #1a1c1e; margin-top: 10px;">
             <thead>
                 <tr style="background: #242629;">

@@ -7,6 +7,16 @@ function getResistorClass(val) {
     return `res-${num} res-cell`;
 }
 
+function getContrastColor(hex) {
+    if (!hex || hex.length < 6) return 'white';
+    if (hex.startsWith('rgba') || hex === 'transparent') return 'white';
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128 ? 'black' : 'white';
+}
+
 function renderWBSColumns(t, triangle) {
     return `
         <div class="d-cell c-root ${getResistorClass(t.wbs_root)}">${t.wbs_root}</div>
@@ -25,6 +35,9 @@ function renderWBSColumns(t, triangle) {
                 ${t.name}
             </span>
         </div>
+        <div class="d-cell c-prog" data-action="editTask" data-id="${t.fullId}" style="cursor:pointer" title="Click to edit progress and dates">
+            ${t.progress || 0}%
+        </div>
         <div class="d-cell c-start" data-action="selectTask" data-id="${t.fullId}">${t.calculatedStart}</div>
         <div class="d-cell c-end" data-action="selectTask" data-id="${t.fullId}">${t.calculatedEnd}</div>
         <div class="d-cell c-dur" data-action="selectTask" data-id="${t.fullId}">${t.duration || 0}</div>
@@ -33,10 +46,11 @@ function renderWBSColumns(t, triangle) {
 
 function renderTimelineChart(t, l, w, taskColor) {
     const showText = w > 40; 
+    const textColor = getContrastColor(taskColor);
     return `
         <div class="task-bars-cell" onmouseenter="this.parentElement.draggable=false" onmouseleave="this.parentElement.draggable=true">
             <div class="bar ${t.wbs_sibling==='-'?'summary-bar':''}" 
-                 style="left:${l}px; width:${w}px; background-color:${taskColor};" 
+                 style="left:${l}px; width:${w}px; background-color:${taskColor}; color:${textColor};" 
                  data-action="barInteract" data-id="${t.fullId}">
                 <div class="bar-handle bar-handle-left" data-action="resize-left"></div>
                 <div class="progress-overlay" style="width:${t.progress || 0}%"></div>
@@ -64,7 +78,7 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
         lastZoomLevel = zoomLevel;
     }
     
-    const stickyWidth = `calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--start-w) + var(--end-w) + var(--dur-w))`;
+    const stickyWidth = `calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w) + var(--start-w) + var(--end-w) + var(--dur-w))`;
     
     const rowHeight = 40;
     const headerHeight = 42; 
@@ -77,7 +91,7 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
     const startIdx = Math.max(0, Math.floor((scrollTop - headerHeight) / rowHeight));
     const endIdx = Math.min(flat.length, Math.ceil((scrollTop + viewportHeight - headerHeight) / rowHeight) + 1);
 
-    const stickyWidthPx = 35 + 35 + 35 + 35 + 70 + 80 + 280 + 90 + 90 + 50; 
+    const stickyWidthPx = 35 + 35 + 35 + 35 + 70 + 80 + 280 + 50 + 90 + 90 + 50; 
     const visibleStartDay = Math.max(0, Math.floor((scrollLeft - stickyWidthPx) / zoomLevel));
     const visibleEndDay = Math.min(totalDays, Math.ceil((scrollLeft + viewportWidth) / zoomLevel));
 
@@ -86,6 +100,7 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
             <div class="gantt-header-wrapper" style="position: sticky; top: 0; z-index: 200; background: var(--header-bg);"></div>
             <div class="gantt-rows-container" style="position: relative;"></div>
             <div class="gantt-decorations-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150;"></div>
+            <div class="hover-line" style="position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dotted #888; z-index: 151; pointer-events: none; display: none;"></div>
         `;
         forceFull = true;
     }
@@ -103,8 +118,8 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
     if (needsHeaderUpdate) {
         headerWrapper.dataset.lastScrollLeft = scrollLeft;
         let h = `<div class="gantt-header">
-            <div class="h-cell c-root">Root</div><div class="h-cell c-parent">Parent</div><div class="h-cell c-child">Child</div><div class="h-cell c-sibling">Siblings</div><div class="h-cell c-color">Color</div><div class="h-cell c-dep">Dependency</div><div class="h-cell c-name">Task Name</div><div class="h-cell c-start">Start</div><div class="h-cell c-end">End</div><div class="h-cell c-dur">Days</div>
-            <div class="gantt-timeline" style="position:relative; flex-grow:1; overflow:hidden;" data-action="addMilestone" data-min-date="${minDate.toISOString()}" title="Click to add Milestone">
+            <div class="h-cell c-root">Root</div><div class="h-cell c-parent">Parent</div><div class="h-cell c-child">Child</div><div class="h-cell c-sibling">Siblings</div><div class="h-cell c-color">Color</div><div class="h-cell c-dep">Dependency</div><div class="h-cell c-name">Task Name</div><div class="h-cell c-prog">Progress</div><div class="h-cell c-start">Start</div><div class="h-cell c-end">End</div><div class="h-cell c-dur">Days</div>
+            <div class="gantt-timeline" style="position:relative; flex-grow:1; overflow:hidden;" data-action="addMilestone" data-min-date="${minDate.toISOString()}" title="Double click to add Milestone">
                 <div class="timeline-weeks" style="position:relative; height:20px;">`;
         
         let weekRunner = new Date(minDate);
@@ -163,7 +178,7 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
         const triangle = fold.getTriangle(t, t.isFolded);
         const isSelected = selectedTaskFullId === t.fullId;
         const depthClass = `row-depth-${t.depth}`;
-        const taskColor = t.resolvedColor || '#4a9eff';
+        const taskColor = t.resolvedColor || '#f4902c';
 
         rowH += `<div class="gantt-row ${isSelected?'selected-row':''} ${depthClass}" draggable="true" 
                 data-id="${t.fullId}" 

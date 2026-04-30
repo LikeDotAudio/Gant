@@ -79,7 +79,7 @@ export function getTriangle(task, isFolded) {
     const hasChildren = task.hasChildren ?? (gantt.getChildren(task)?.length > 0);
     
     if (!hasChildren) {
-        return '<span style="width:21px; display:inline-block;"></span>';
+        return '<span style="width:37px; display:inline-block;"></span>';
     }
     
     // We use a single character and let CSS handle the rotation animation

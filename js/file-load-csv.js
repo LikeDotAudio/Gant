@@ -19,7 +19,21 @@ export async function loadCSV(state, render, showStatus) {
                 return;
             }
 
-            const parts = line.split(',').map(s => s.replace(/^"|"$/g, '').trim());
+            // More robust CSV splitting to handle quoted commas
+            const parts = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) {
+                    parts.push(current.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            parts.push(current.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
             
             if (mode === 'milestones') {
                 if (parts.length >= 2) {
@@ -28,15 +42,17 @@ export async function loadCSV(state, render, showStatus) {
                 return;
             }
 
-            const [id, name, progress, color, dependency] = parts;
-            if (!id || id === 'Root') return; // Skip header or empty
+            const [id, color, dependency, name, progress, start, duration] = parts;
+            if (!id || id === 'ID') return; // Skip header or empty
 
             const task = { 
                 id: id.split('.').pop(), 
                 name, 
                 progress: parseInt(progress) || 0, 
                 color, 
-                dependency 
+                dependency,
+                start,
+                duration: parseInt(duration) || 1
             };
             taskMap.set(id, task);
 
