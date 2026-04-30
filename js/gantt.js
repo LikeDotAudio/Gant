@@ -13,8 +13,8 @@ export function setChildren(t, arr) {
 }
 
 export function getTaskId(t) {
-    if (!t) return null;
-    return t.RootID || t.ParentID || t.CHILDID || t.siblingID || t.id || null;
+    if (!t) return "0";
+    return (t.RootID || t.ParentID || t.CHILDID || t.siblingID || t.id || "0").toString();
 }
 
 export function setTaskId(t, val, depth) {
@@ -27,26 +27,37 @@ export function setTaskId(t, val, depth) {
 }
 
 function safeISODate(date) {
-    if (!date || isNaN(date.getTime())) return new Date().toISOString().split('T')[0];
-    return date.toISOString().split('T')[0];
+    try {
+        if (!date || typeof date.getTime !== 'function' || isNaN(date.getTime())) {
+            return new Date().toISOString().split('T')[0];
+        }
+        return date.toISOString().split('T')[0];
+    } catch (e) {
+        return new Date().toISOString().split('T')[0];
+    }
 }
 
 export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, result = [], inheritedColor = null) {
     const { rootId = null, baseDate = null, foldedIds = new Set() } = options;
     
-    const globalBase = (baseDate && !isNaN(new Date(baseDate).getTime())) 
+    const globalBase = (baseDate && typeof baseDate === 'string' && !isNaN(new Date(baseDate).getTime())) 
         ? baseDate 
         : new Date().toISOString().split('T')[0];
     
-    let runner = new Date(globalBase + 'T00:00:00');
-    if (isNaN(runner.getTime())) runner = new Date();
+    let runner;
+    try {
+        runner = new Date(globalBase + 'T00:00:00');
+        if (isNaN(runner.getTime())) runner = new Date();
+    } catch (e) {
+        runner = new Date();
+    }
 
     if (!tasks) return result;
     const safeFoldedIds = (foldedIds instanceof Set) ? foldedIds : new Set();
 
     tasks.forEach((t) => {
         const tid = getTaskId(t);
-        const fullId = parentId ? `${parentId}.${tid}` : tid;
+        const fullId = (parentId ? `${parentId}.${tid}` : tid) || "0";
         const parts = fullId.split('.');
         
         // Explicit dates override the current runner
@@ -116,9 +127,13 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
             result.push(taskEntry);
         }
         
-        // Waterfall logic: move runner to the end of the current task
-        const nextStart = new Date(taskEntry.calculatedEnd + 'T00:00:00');
-        if (!isNaN(nextStart.getTime())) runner = nextStart;
+        // Waterfall logic: move runner based on this task's own duration
+        // This ensures the waterfall "resets" its scale at each level and parents don't bloat the sibling sequence
+        const ownDuration = (t.duration !== undefined) ? t.duration : 1;
+        const waterfallEnd = new Date(taskEntry.calculatedStart + 'T00:00:00');
+        waterfallEnd.setDate(waterfallEnd.getDate() + ownDuration);
+        
+        if (!isNaN(waterfallEnd.getTime())) runner = waterfallEnd;
     });
     return result;
 }
@@ -129,18 +144,18 @@ export function getFlattenedProject(tasks, options) {
     let max = null;
     if (flat.length > 0) {
         flat.forEach(t => {
-            const s = new Date(t.calculatedStart);
-            const e = new Date(t.calculatedEnd);
-            if (!min || s < min) min = s;
-            if (!max || e > max) max = e;
+            const s = new Date(t.calculatedStart + 'T00:00:00');
+            const e = new Date(t.calculatedEnd + 'T00:00:00');
+            if (!isNaN(s.getTime()) && (!min || s < min)) min = s;
+            if (!isNaN(e.getTime()) && (!max || e > max)) max = e;
         });
-        if (min) min.setDate(min.getDate() - 5);
-        if (max) max.setDate(max.getDate() + 10);
+        if (min && !isNaN(min.getTime())) min.setDate(min.getDate() - 5);
+        if (max && !isNaN(max.getTime())) max.setDate(max.getDate() + 10);
     }
     return { 
         flat, 
-        min: min ? min.toISOString().split('T')[0] : null, 
-        max: max ? max.toISOString().split('T')[0] : null 
+        min: (min && !isNaN(min.getTime())) ? min.toISOString().split('T')[0] : null, 
+        max: (max && !isNaN(max.getTime())) ? max.toISOString().split('T')[0] : null 
     };
 }
 
@@ -168,6 +183,7 @@ export function findTask(tasks, fullId) {
 }
 
 export function getFullIdOfParent(tasks, fullId) {
+    if (!fullId) return null;
     const parts = fullId.split('.');
     if (parts.length <= 1) return null;
     return parts.slice(0, -1).join('.');

@@ -80,7 +80,7 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
     
     const stickyWidth = `calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w) + var(--start-w) + var(--end-w) + var(--dur-w))`;
     
-    const rowHeight = 40;
+    const rowHeight = 60;
     const headerHeight = 42; 
     const totalHeight = headerHeight + (flat.length * rowHeight);
     const viewportHeight = container.clientHeight || 800;
@@ -137,7 +137,12 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
         
         for(let i = visibleStartDay; i < visibleEndDay; i++) { 
             let d = new Date(minDate); d.setDate(d.getDate() + i); 
-            h += `<div class="day-col" style="position:absolute; left:${i * zoomLevel}px; width:${zoomLevel}px;">${d.getMonth()+1}/${d.getDate()}</div>`; 
+            h += `<div class="day-col" style="position:absolute; left:${i * zoomLevel}px; width:${zoomLevel}px; display: flex;">
+                    <div style="flex:1; border-right:1px solid rgba(255,255,255,0.05); height:100%; box-sizing:border-box;">${d.getMonth()+1}/${d.getDate()}</div>
+                    <div style="flex:1; border-right:1px solid rgba(255,255,255,0.05); height:100%;"></div>
+                    <div style="flex:1; border-right:1px solid rgba(255,255,255,0.05); height:100%;"></div>
+                    <div style="flex:1; height:100%;"></div>
+                  </div>`; 
         }
         h += `</div></div></div>`;
         headerWrapper.innerHTML = h;

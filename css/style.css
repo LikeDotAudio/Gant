@@ -6,7 +6,7 @@
     --header-bg: #242629;
     --text-color: #e1e2e5;
     --border-color: #33363a;
-    --chart-row-height: 40px;
+    --chart-row-height: 60px;
     --chart-col-width: 60px;
     --task-bar-color: #f4902c;
     --summary-bar-color: #ffb86c;
@@ -92,17 +92,17 @@ textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 15px; bor
 .gantt-header { display: flex; position: sticky; top: 0; z-index: 100; background: #242629; border-bottom: 2px solid var(--border-color); }
 .h-cell { flex-shrink: 0; border-right: 1px solid var(--border-color); padding: 10px 5px; font-weight: bold; font-size: 0.75em; background: #242629; position: sticky; left: 0; z-index: 101; text-align: center; }
 
-.c-root { left: 0; width: var(--root-w); }
-.c-parent { left: var(--root-w); width: var(--parent-w); }
-.c-child { left: calc(var(--root-w) + var(--parent-w)); width: var(--child-w); }
-.c-sibling { left: calc(var(--root-w) + var(--parent-w) + var(--child-w)); width: var(--sibling-w); }
-.c-color { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w)); width: var(--color-w); }
-.c-dep { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w)); width: var(--dep-w); }
-.c-name { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w)); width: var(--name-w); text-align: left; padding-left: 10px; }
-.c-prog { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w)); width: var(--prog-w); }
-.c-start { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w)); width: var(--start-w); }
-.c-end { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w) + var(--start-w)); width: var(--end-w); }
-.c-dur { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w) + var(--start-w) + var(--end-w)); width: var(--dur-w); }
+.c-root { left: 0; width: var(--root-w); opacity: 0.5; }
+.c-parent { left: var(--root-w); width: var(--parent-w); opacity: 0.5; }
+.c-child { left: calc(var(--root-w) + var(--parent-w)); width: var(--child-w); opacity: 0.5; }
+.c-sibling { left: calc(var(--root-w) + var(--parent-w) + var(--child-w)); width: var(--sibling-w); opacity: 0.5; }
+.c-color { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w)); width: var(--color-w); opacity: 0.5; }
+.c-dep { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w)); width: var(--dep-w); opacity: 0.5; }
+.c-name { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w)); width: var(--name-w); text-align: left; padding-left: 10px; opacity: 0.5; }
+.c-prog { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w)); width: var(--prog-w); opacity: 0.5; }
+.c-start { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w)); width: var(--start-w); opacity: 0.5; }
+.c-end { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w) + var(--start-w)); width: var(--end-w); opacity: 0.5; }
+.c-dur { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w) + var(--start-w) + var(--end-w)); width: var(--dur-w); opacity: 0.5; }
 
 .gantt-timeline { display: flex; flex-direction: column; }
 .timeline-weeks { display: flex; height: 20px; border-bottom: 1px solid var(--border-color); }
@@ -120,9 +120,11 @@ textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 15px; bor
 .gantt-row.selected-row .d-cell { background: #2a3a4a; }
 
 .gantt-rows-container {
-    background-image: linear-gradient(to right, #2d3035 1px, transparent 1px);
-    background-size: var(--chart-col-width) 100%;
-    background-position: var(--sticky-width) 0;
+    background-image: 
+        linear-gradient(to right, rgba(45, 48, 53, 1) 1px, transparent 1px),
+        linear-gradient(to right, rgba(45, 48, 53, 0.3) 1px, transparent 1px);
+    background-size: var(--chart-col-width) 100%, calc(var(--chart-col-width) / 4) 100%;
+    background-position: var(--sticky-width) 0, var(--sticky-width) 0;
 }
 
 .d-cell { flex-shrink: 0; padding: 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--border-color); font-size: 0.8em; display: flex; align-items: center; height: 100%; position: sticky; z-index: 90; justify-content: center; }
@@ -159,12 +161,12 @@ textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 15px; bor
     flex-grow: 1; 
     height: 100%; 
 }
-.bar { position: absolute; height: 22px; top: 9px; background: var(--task-bar-color); border-radius: 4px; color: white; font-size: 10px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 10; border: 1px solid rgba(255,255,255,0.1); }
+.bar { position: absolute; height: 44px; top: 8px; background: var(--task-bar-color); border-radius: 4px; color: white; font-size: 10px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 10; border: 1px solid rgba(255,255,255,0.1); }
 .bar-handle { position: absolute; width: 6px; height: 100%; top: 0; cursor: ew-resize; z-index: 11; background: rgba(255,255,255,0.05); }
 .bar-handle-left { left: 0; }
 .bar-handle-right { right: 0; }
 .bar-content { flex-grow: 1; padding: 0 8px; pointer-events: none; overflow: hidden; opacity: 0.9; }
-.summary-bar { background: #3c4146; height: 10px; top: 15px; }
+.summary-bar { background: #3c4146; height: 20px; top: 20px; }
 
 /* Resistor Colors */
 .res-0 { background: #000000 !important; color: #fff; }

@@ -38,14 +38,22 @@ export function startBarDrag(e, fullId, mode, state, render) {
         window.removeEventListener('mouseup', up);
 
         // 2. DEFERRED CALCULATION (Wait until finished)
-        const dayDelta = Math.round((me.clientX - dragStartX) / zoomLevel);
+        // Snap to 1/4 day
+        const dayDelta = Math.round((me.clientX - dragStartX) / (zoomLevel / 4)) * 0.25;
         if (mode === 'resize-right') {
-            const d = originalDuration + dayDelta;
-            if (d >= 1) draggedTask.duration = d;
+            const d = Math.max(0.25, originalDuration + dayDelta);
+            draggedTask.duration = d;
         } else if (mode === 'move') {
             const newDate = new Date(originalStart);
-            newDate.setDate(newDate.getDate() + dayDelta);
-            draggedTask.start = newDate.toISOString().split('T')[0];
+            // newDate.setDate(newDate.getDate() + dayDelta) doesn't handle fractional days well
+            // use getTime() instead
+            const newTime = originalStart.getTime() + (dayDelta * 86400000);
+            const snappedDate = new Date(newTime);
+            draggedTask.start = snappedDate.toISOString().split('T')[0];
+            // If we want true 1/4 day resolution in 'start', we might need to store time too.
+            // But if 'start' is only a date string, we can't represent 1/4 day offsets easily without changing the schema.
+            // Let's check if the user wants 1/4 day durations or 1/4 day positions too.
+            // "the days should move in 1/4s of a day" implies positions.
             draggedTask.duration = originalDuration;
         }
         

@@ -16,8 +16,8 @@ import { renderSpreadsheet } from './spreadsheet.js';
 import { loadCSV } from './file-load-csv.js';
 import { saveCSV } from './file-save-csv.js';
 
-// Initialize Web Worker
-const worker = new Worker('js/worker.js', { type: 'module' });
+// Initialize Web Worker with cache buster
+const worker = new Worker('js/worker.js?cb=' + Date.now(), { type: 'module' });
 let currentRequestId = 0;
 let firstLoad = true;
 
@@ -506,7 +506,21 @@ window.app = {
 // Initialize after app object is set
 try {
     setupEventListeners();
-    render();
+    
+    // Load sample data by default
+    fetch('sample.json')
+        .then(response => response.json())
+        .then(data => {
+            state.projectData = data;
+            el.jsonEditor.value = JSON.stringify(data, null, 2);
+            el.activeFilename.innerText = "sample.json (Default)";
+            render(true);
+        })
+        .catch(err => {
+            console.warn("Could not load sample.json:", err);
+            render();
+        });
+
     console.log("Gantt App initialized successfully.");
 } catch (err) {
     console.error("Initialization error:", err);

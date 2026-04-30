@@ -1,0 +1,319 @@
+{
+  "project": "Classic Car Restoration & Assembly",
+  "baseDate": "2026-05-01",
+  "roots": [
+    {
+      "RootID": "1",
+      "name": "The Body and Chassis (The Shell)",
+      "progress": 25,
+      "type": "summary",
+      "color": "#ff0000",
+      "parents": [
+        {
+          "ParentID": "1.1",
+          "name": "Main Body Shell",
+          "progress": 50,
+          "duration": 10,
+          "color": "#ff0000"
+        },
+        {
+          "ParentID": "1.2",
+          "name": "Chassis/Frame",
+          "progress": 80,
+          "duration": 5,
+          "color": "#ff0000"
+        },
+        {
+          "ParentID": "1.3",
+          "name": "Exterior Panels",
+          "progress": 10,
+          "duration": 15,
+          "color": "#ff0000"
+        },
+        {
+          "ParentID": "1.4",
+          "name": "Bumpers and Valances",
+          "progress": 0,
+          "duration": 3,
+          "color": "#ff0000"
+        },
+        {
+          "ParentID": "1.5",
+          "name": "Glass and Seals",
+          "progress": 0,
+          "duration": 4,
+          "color": "#ff0000"
+        },
+        {
+          "ParentID": "1.6",
+          "name": "Grilles and Trim",
+          "progress": 0,
+          "duration": 6,
+          "color": "#ff0000"
+        }
+      ]
+    },
+    {
+      "RootID": "2",
+      "name": "The Powertrain (The Muscle)",
+      "progress": 0,
+      "type": "summary",
+      "color": "#ff9800",
+      "parents": [
+        {
+          "ParentID": "2.1",
+          "name": "Engine Block Assembly",
+          "progress": 0,
+          "duration": 12,
+          "color": "#ff9800"
+        },
+        {
+          "ParentID": "2.2",
+          "name": "Induction System",
+          "progress": 0,
+          "duration": 4,
+          "color": "#ff9800"
+        },
+        {
+          "ParentID": "2.3",
+          "name": "Fuel System",
+          "progress": 0,
+          "duration": 6,
+          "color": "#ff9800"
+        },
+        {
+          "ParentID": "2.4",
+          "name": "Exhaust System",
+          "progress": 0,
+          "duration": 5,
+          "color": "#ff9800"
+        },
+        {
+          "ParentID": "2.5",
+          "name": "Cooling System",
+          "progress": 0,
+          "duration": 5,
+          "color": "#ff9800"
+        },
+        {
+          "ParentID": "2.6",
+          "name": "Transmission/Drivetrain",
+          "progress": 0,
+          "duration": 8,
+          "color": "#ff9800"
+        }
+      ]
+    },
+    {
+      "RootID": "3",
+      "name": "Suspension and Steering",
+      "progress": 0,
+      "type": "summary",
+      "color": "#ffff00",
+      "parents": [
+        {
+          "ParentID": "3.1",
+          "name": "Front Suspension",
+          "progress": 0,
+          "duration": 7,
+          "color": "#ffff00"
+        },
+        {
+          "ParentID": "3.2",
+          "name": "Rear Suspension",
+          "progress": 0,
+          "duration": 5,
+          "color": "#ffff00"
+        },
+        {
+          "ParentID": "3.3",
+          "name": "Shocks and Struts",
+          "progress": 0,
+          "duration": 3,
+          "color": "#ffff00"
+        },
+        {
+          "ParentID": "3.4",
+          "name": "Steering Gear",
+          "progress": 0,
+          "duration": 6,
+          "color": "#ffff00"
+        },
+        {
+          "ParentID": "3.5",
+          "name": "Rear End",
+          "progress": 0,
+          "duration": 5,
+          "color": "#ffff00"
+        }
+      ]
+    },
+    {
+      "RootID": "4",
+      "name": "Braking System",
+      "progress": 0,
+      "type": "summary",
+      "color": "#00ff00",
+      "parents": [
+        {
+          "ParentID": "4.1",
+          "name": "Master Cylinder",
+          "progress": 0,
+          "duration": 2,
+          "color": "#00ff00"
+        },
+        {
+          "ParentID": "4.2",
+          "name": "Brake Lines",
+          "progress": 0,
+          "duration": 8,
+          "color": "#00ff00"
+        },
+        {
+          "ParentID": "4.3",
+          "name": "Front Brakes",
+          "progress": 0,
+          "duration": 5,
+          "color": "#00ff00"
+        },
+        {
+          "ParentID": "4.4",
+          "name": "Rear Brakes",
+          "progress": 0,
+          "duration": 5,
+          "color": "#00ff00"
+        },
+        {
+          "ParentID": "4.5",
+          "name": "Parking Brake",
+          "progress": 0,
+          "duration": 3,
+          "color": "#00ff00"
+        }
+      ]
+    },
+    {
+      "RootID": "5",
+      "name": "Electrical and Wiring",
+      "progress": 0,
+      "type": "summary",
+      "color": "#2196f3",
+      "parents": [
+        {
+          "ParentID": "5.1",
+          "name": "Wiring Harnesses",
+          "progress": 0,
+          "duration": 15,
+          "color": "#2196f3"
+        },
+        {
+          "ParentID": "5.2",
+          "name": "Battery and Cables",
+          "progress": 0,
+          "duration": 2,
+          "color": "#2196f3"
+        },
+        {
+          "ParentID": "5.3",
+          "name": "Charging System",
+          "progress": 0,
+          "duration": 3,
+          "color": "#2196f3"
+        },
+        {
+          "ParentID": "5.4",
+          "name": "Ignition System",
+          "progress": 0,
+          "duration": 4,
+          "color": "#2196f3"
+        },
+        {
+          "ParentID": "5.5",
+          "name": "Lighting",
+          "progress": 0,
+          "duration": 6,
+          "color": "#2196f3"
+        }
+      ]
+    },
+    {
+      "RootID": "6",
+      "name": "The Interior",
+      "progress": 0,
+      "type": "summary",
+      "color": "#9c27b0",
+      "parents": [
+        {
+          "ParentID": "6.1",
+          "name": "Dashboard",
+          "progress": 0,
+          "duration": 10,
+          "color": "#9c27b0"
+        },
+        {
+          "ParentID": "6.2",
+          "name": "Seating",
+          "progress": 0,
+          "duration": 5,
+          "color": "#9c27b0"
+        },
+        {
+          "ParentID": "6.3",
+          "name": "Upholstery",
+          "progress": 0,
+          "duration": 12,
+          "color": "#9c27b0"
+        },
+        {
+          "ParentID": "6.4",
+          "name": "HVAC",
+          "progress": 0,
+          "duration": 7,
+          "color": "#9c27b0"
+        },
+        {
+          "ParentID": "6.5",
+          "name": "Safety",
+          "progress": 0,
+          "duration": 3,
+          "color": "#9c27b0"
+        }
+      ]
+    },
+    {
+      "RootID": "7",
+      "name": "Wheels and Tires",
+      "progress": 0,
+      "type": "summary",
+      "color": "#ffffff",
+      "parents": [
+        {
+          "ParentID": "7.1",
+          "name": "Rims",
+          "progress": 0,
+          "duration": 2,
+          "color": "#ffffff"
+        },
+        {
+          "ParentID": "7.2",
+          "name": "Tires",
+          "progress": 0,
+          "duration": 1,
+          "color": "#ffffff"
+        },
+        {
+          "ParentID": "7.3",
+          "name": "Lug Nuts",
+          "progress": 0,
+          "duration": 1,
+          "color": "#ffffff"
+        }
+      ]
+    }
+  ],
+  "milestones": [
+    { "name": "Project Start", "date": "2026-05-01" },
+    { "name": "Rolling Chassis Complete", "date": "2026-06-15" },
+    { "name": "First Engine Start", "date": "2026-08-01" }
+  ]
+}
