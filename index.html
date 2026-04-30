@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gantt WBS Workspace - Dark Mode</title>
+    <script>
+        window.app = {
+            _loading: true,
+            _notify: () => { 
+                const status = document.getElementById('status-text');
+                if (status) status.innerText = "Application is still loading... please wait.";
+            },
+            openDir() { this._notify(); },
+            newFile() { this._notify(); },
+            saveFile() { this._notify(); },
+            saveFileAs() { this._notify(); },
+            importCSV() { this._notify(); },
+            exportCSV() { this._notify(); },
+            setView() { this._notify(); },
+            toggleJsonView() { this._notify(); },
+            toggleCol() { this._notify(); },
+            zoom() { this._notify(); },
+            foldToLevel() { this._notify(); }
+        };
+    </script>
+    <style>
+        :root {
+            --bg-color: #1a1c1e;
+            --sidebar-color: #242629;
+            --accent-color: #4a9eff;
+            --button-color: #3e444a;
+            --header-bg: #242629;
+            --text-color: #e1e2e5;
+            --border-color: #33363a;
+            --chart-row-height: 40px;
+            --chart-col-width: 60px;
+            --task-bar-color: #4a9eff;
+            --summary-bar-color: #7aa2f7;
+            
+            --root-w: 35px;
+            --parent-w: 35px;
+            --child-w: 35px;
+            --sibling-w: 35px;
+            --color-w: 60px;
+            --dep-w: 80px;
+            --name-w: 280px;
+            --start-w: 90px;
+            --end-w: 90px;
+            --dur-w: 50px;
+        }
+
+        #workspace.hide-root { --root-w: 0px; }
+        #workspace.hide-parent { --parent-w: 0px; }
+        #workspace.hide-child { --child-w: 0px; }
+        #workspace.hide-sibling { --sibling-w: 0px; }
+        #workspace.hide-color { --color-w: 0px; }
+        #workspace.hide-dep { --dep-w: 0px; }
+        #workspace.hide-start { --start-w: 0px; }
+        #workspace.hide-end { --end-w: 0px; }
+        #workspace.hide-dur { --dur-w: 0px; }
+
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg-color); color: var(--text-color); overflow: hidden; }
+        
+        #workspace { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .hide-root .c-root, .hide-parent .c-parent, .hide-child .c-child, .hide-sibling .c-sibling,
+        .hide-color .c-color, .hide-dep .c-dep, .hide-start .c-start, .hide-end .c-end, .hide-dur .c-dur { display: none !important; }
+
+        .header { 
+            padding: 5px 20px; 
+            background: var(--header-bg); 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; 
+            align-items: center; 
+            gap: 20px;
+            height: 35px;
+        }
+        .header h2 { margin: 0; font-size: 1.1em; flex-grow: 1; }
+
+        /* Menu System */
+        .menu-bar { display: flex; gap: 10px; }
+        .menu-group { position: relative; display: inline-block; }
+        .menu-label { padding: 5px 10px; cursor: pointer; font-weight: bold; font-size: 0.85em; border-radius: 4px; }
+        .menu-label:hover { background: #3e444a; }
+        
+        .menu-content { 
+            display: none; position: absolute; top: 100%; left: 0; 
+            background: #242629; border: 1px solid var(--border-color); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 1000;
+            min-width: 180px; border-radius: 4px; padding: 5px 0;
+        }
+        .menu-group:hover .menu-content { display: block; }
+        
+        .menu-content button, .menu-content label { 
+            display: flex; align-items: center; width: 100%; padding: 8px 15px; 
+            background: none; border: none; text-align: left; color: #ccc; 
+            font-size: 0.85em; cursor: pointer; gap: 10px; box-sizing: border-box;
+            border-radius: 0; font-family: inherit; font-weight: normal;
+        }
+        .menu-content button:hover, .menu-content label:hover { background: #3e444a; color: #fff; }
+        .menu-content input[type="checkbox"] { margin: 0; cursor: pointer; }
+
+        .zoom-controls { display: flex; align-items: center; gap: 5px; font-size: 0.8em; color: #888; }
+        .zoom-controls button { padding: 2px 8px; }
+
+        #editor-container { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .view-content { flex-grow: 1; display: none; overflow: auto; }
+        .view-content.active { display: flex; flex-direction: column; }
+        textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 15px; border: none; outline: none; background: #1a1c1e; color: #89ddff; font-size: 12px; }
+
+        #gantt-container { flex-grow: 1; overflow: auto; position: relative; background: #1a1c1e; }
+        #gantt-chart { display: inline-block; min-width: 100%; background: #1a1c1e; user-select: none; position: relative; }
+        
+        .gantt-header { display: flex; position: sticky; top: 0; z-index: 100; background: #242629; border-bottom: 2px solid var(--border-color); }
+        .h-cell { flex-shrink: 0; border-right: 1px solid var(--border-color); padding: 10px 5px; font-weight: bold; font-size: 0.75em; background: #242629; position: sticky; left: 0; z-index: 101; text-align: center; }
+        
+        .c-root { left: 0; width: var(--root-w); }
+        .c-parent { left: var(--root-w); width: var(--parent-w); }
+        .c-child { left: calc(var(--root-w) + var(--parent-w)); width: var(--child-w); }
+        .c-sibling { left: calc(var(--root-w) + var(--parent-w) + var(--child-w)); width: var(--sibling-w); }
+        .c-color { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w)); width: var(--color-w); }
+        .c-dep { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w)); width: var(--dep-w); }
+        .c-name { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w)); width: var(--name-w); text-align: left; padding-left: 10px; }
+        .c-start { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w)); width: var(--start-w); }
+        .c-end { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--start-w)); width: var(--end-w); }
+        .c-dur { left: calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--start-w) + var(--end-w)); width: var(--dur-w); }
+
+        .gantt-timeline { display: flex; flex-direction: column; }
+        .timeline-weeks { display: flex; height: 20px; border-bottom: 1px solid var(--border-color); }
+        .timeline-days { display: flex; }
+        .week-band { flex-shrink: 0; height: 100%; text-align: center; font-size: 0.65em; line-height: 20px; border-right: 1px solid var(--border-color); }
+        .week-band:nth-child(even) { background: #2a2d31; }
+        .week-band:nth-child(odd) { background: #1e2124; }
+
+        .day-col { width: var(--chart-col-width); text-align: center; border-right: 1px solid #2d3035; font-size: 0.7em; padding: 5px 0; flex-shrink: 0; color: #666; }
+        
+        .gantt-row { display: flex; height: var(--chart-row-height); border-bottom: 1px solid #2d3035; align-items: center; contain: content; }
+        .gantt-row:hover .d-cell { background: #25282c; }
+        .gantt-row.drag-over { background: #2d3136; border-top: 2px solid var(--accent-color); }
+        .gantt-row.dragging { opacity: 0.3; }
+        .gantt-row.selected-row .d-cell { background: #2a3a4a; }
+        
+        .d-cell { flex-shrink: 0; padding: 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--border-color); font-size: 0.8em; display: flex; align-items: center; height: 100%; position: sticky; z-index: 90; justify-content: center; }
+        
+        .d-cell input { 
+            background: transparent; 
+            border: none; 
+            color: inherit; 
+            font-family: inherit; 
+            font-size: inherit; 
+            width: 100%; 
+            height: 100%; 
+            text-align: center; 
+            outline: none; 
+            cursor: pointer;
+            padding: 0;
+        }
+        .d-cell input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        .d-cell input[type="number"] { -moz-appearance: textfield; }
+        .d-cell input[type="number"]::-webkit-inner-spin-button, 
+        .d-cell input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Hierarchical row colors */
+        .row-depth-0 .d-cell { background: #000000; color: #fff; font-weight: bold; }
+        .row-depth-1 .d-cell { background: #2d3136; }
+        .row-depth-2 .d-cell { background: #353a3f; }
+        .row-depth-leaf .d-cell { background: #1a1c1e; }
+
+        /* Remove background colors for ID columns */
+        .d-cell.c-root, .d-cell.c-parent, .d-cell.c-child, .d-cell.c-sibling { background: transparent !important; }
+
+        .d-cell.c-name { justify-content: flex-start; cursor: pointer; }
+        .d-cell.c-name:hover { background: #2c3e50 !important; }
+
+        .task-bars-cell { position: relative; flex-grow: 1; height: 100%; background: #1a1c1e; }
+        .bar { position: absolute; height: 22px; top: 9px; background: var(--task-bar-color); border-radius: 4px; color: white; font-size: 10px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 10; border: 1px solid rgba(255,255,255,0.1); }
+        .bar-handle { position: absolute; width: 6px; height: 100%; top: 0; cursor: ew-resize; z-index: 11; background: rgba(255,255,255,0.05); }
+        .bar-handle-left { left: 0; }
+        .bar-handle-right { right: 0; }
+        .bar-content { flex-grow: 1; padding: 0 8px; pointer-events: none; overflow: hidden; opacity: 0.9; }
+        .summary-bar { background: #3c4146; height: 10px; top: 15px; }
+
+        /* Resistor Colors */
+        .res-0 { background: #000000; color: #fff; }
+        .res-1 { background: #5d4037; color: #fff; }
+        .res-2 { background: #ff0000; color: #fff; }
+        .res-3 { background: #ff9800; color: #fff; }
+        .res-4 { background: #ffff00; color: #000; }
+        .res-5 { background: #00ff00; color: #fff; }
+        .res-6 { background: #2196f3; color: #fff; }
+        .res-7 { background: #9c27b0; color: #fff; }
+        .res-8 { background: #9e9e9e; color: #fff; }
+        .res-9 { background: #ffffff; color: #000; }
+        .res-none { background: #242629; color: #888; border: none !important; }
+        .res-cell { border: 1px solid rgba(255,255,255,0.1) !important; }
+        .progress-overlay { position: absolute; left: 0; top: 0; height: 100%; background: rgba(255,255,255,0.1); pointer-events: none; }
+        
+        .fold-toggle { 
+            cursor: pointer; 
+            margin-right: 5px; 
+            font-size: 12px; 
+            width: 16px; 
+            text-align: center; 
+            display: inline-block; 
+            color: var(--accent-color); 
+            transition: transform 0.2s ease;
+            user-select: none;
+        }
+        .fold-toggle.folded { transform: rotate(-90deg); color: #888; }
+        
+        .btn-add { background: #2d7a4b; color: white; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 9px; margin-left: 5px; opacity: 0.3; }
+        .btn-del { background: #7a2d2d; color: white; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 9px; margin-left: 2px; opacity: 0.3; }
+        .btn-add:hover, .btn-del:hover { opacity: 1; }
+        
+        button { background-color: var(--button-color); color: var(--text-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85em; }
+        button:hover { background: #4a5057; }
+        
+        .gantt-row:hover .d-cell { background: #4a5057 !important; }
+        .gantt-row.selected-row .d-cell { background: #2a3a4a !important; border-top: 1px solid var(--accent-color); border-bottom: 1px solid var(--accent-color); }
+        .gantt-row.selected-row .d-cell.c-name { background: #324a62 !important; }
+        .indent { width: 15px; flex-shrink: 0; border-left: 1px dotted #444; height: 100%; margin-right: 3px; }
+        
+        #status { padding: 0 20px; font-size: 0.85em; color: #888; background: #242629; border-top: 1px solid var(--border-color); height: 30px; display: flex; align-items: center; justify-content: space-between; }
+        #status.error { color: #ff4a4a; background: #3a1c1c; }
+        .confirm-group { display: none; gap: 10px; align-items: center; }
+        .confirm-group button { padding: 2px 10px; font-size: 0.9em; }
+
+        #palette-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 5px; }
+        .palette-color { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .palette-color:hover { transform: scale(1.1); border-color: #fff; }
+        .palette-color.active { border-color: #fff; box-shadow: 0 0 5px #fff; }
+
+        #overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .overlay-content { background: var(--sidebar-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; min-width: 300px; }
+        .overlay-content input[type="text"] { background: #1a1c1e; border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 4px; outline: none; }
+
+        .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: #ff4a4a; z-index: 150; pointer-events: none; }
+        .milestone-container { position: absolute; top: 0; bottom: 0; width: 0; z-index: 140; }
+        .milestone-line { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed #ff4a4a; opacity: 0.6; }
+        .milestone-diamond { position: absolute; top: 50px; left: -6px; width: 12px; height: 12px; background: #ff4a4a; transform: rotate(45deg); cursor: pointer; box-shadow: 0 0 5px rgba(255,74,74,0.5); }
+        .milestone-name { position: absolute; top: 48px; left: 12px; font-size: 10px; color: #ff4a4a; white-space: nowrap; background: rgba(26, 28, 30, 0.8); padding: 2px 4px; border-radius: 2px; }
+
+        .col-toggles { 
+            padding: 5px 20px; 
+            background: #242629; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; 
+            gap: 15px; 
+            font-size: 0.75em; 
+            color: #888;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .col-toggles .toggle-item { display: flex; align-items: center; gap: 5px; }
+        .col-toggles .fold-btn { background: #3e444a; color: #ccc; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .col-toggles .fold-btn:hover { background: #4a9eff; color: #fff; }
+        .col-toggles input { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="workspace">
+        <div class="header">
+            <div class="menu-bar">
+                <div class="menu-group">
+                    <div class="menu-label">FILE</div>
+                    <div class="menu-content">
+                        <button onclick="window.app.openDir()">📂 Open File</button>
+                        <hr style="border:none; border-top:1px solid #444; margin:5px 0;">
+                        <button onclick="window.app.newFile()">📄 New File</button>
+                        <hr style="border:none; border-top:1px solid #444; margin:5px 0;">
+                        <button onclick="window.app.saveFile()">💾 Save</button>
+                        <button onclick="window.app.saveFileAs()">💾 Save As...</button>
+                        <hr style="border:none; border-top:1px solid #444; margin:5px 0;">
+                        <button onclick="window.app.importCSV()">📥 Import from CSV</button>
+                        <button onclick="window.app.exportCSV()">📤 Export to CSV</button>
+                    </div>
+                </div>
+                <div class="menu-group">
+                    <div class="menu-label">VIEW</div>
+                    <div class="menu-content">
+                        <button onclick="window.app.setView('visual')">📊 View as WBS</button>
+                        <button onclick="window.app.setView('spreadsheet')">📋 View as Spreadsheet</button>
+                        <button onclick="window.app.setView('json')">📄 View as JSON</button>
+                    </div>
+                </div>
+            </div>
+            <h2 id="active-filename">Gantt Workspace</h2>
+
+            <div class="zoom-controls">
+                <span>Zoom:</span>
+                <button onclick="window.app.zoom(-10)">➖</button>
+                <button onclick="window.app.zoom(10)">➕</button>
+            </div>
+        </div>
+
+        <div class="col-toggles">
+            <span>Show / Fold to:</span>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('root', this.checked)">
+                <button class="fold-btn" onclick="window.app.foldToLevel(0)">Root</button>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('parent', this.checked)">
+                <button class="fold-btn" onclick="window.app.foldToLevel(1)">Parent</button>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('child', this.checked)">
+                <button class="fold-btn" onclick="window.app.foldToLevel(2)">Child</button>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('sibling', this.checked)">
+                <button class="fold-btn" onclick="window.app.foldToLevel(3)">Siblings</button>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('color', this.checked)">
+                <span>Color</span>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('dep', this.checked)">
+                <span>Dependency</span>
+            </div>
+            <span style="border-left: 1px solid #444; height: 12px; margin: 0 5px;"></span>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('start', this.checked)">
+                <span>Start</span>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('end', this.checked)">
+                <span>Stop</span>
+            </div>
+            <div class="toggle-item">
+                <input type="checkbox" checked onchange="window.app.toggleCol('dur', this.checked)">
+                <span>Days</span>
+            </div>
+            <span style="border-left: 1px solid #444; height: 12px; margin: 0 5px;"></span>
+            <div class="zoom-controls" style="margin-left: auto; gap: 10px;">
+                <button onclick="window.app.addAbove()" style="background: #2d7a4b; color: white;">➕ Add Above</button>
+                <button onclick="window.app.addBelow()" style="background: #2d7a4b; color: white;">➕ Add Below</button>
+                <button onclick="window.app.confirmDeleteSelected()" style="background: #7a2d2d; color: white;">🗑️ Delete</button>
+            </div>
+        </div>
+
+        <div id="editor-container">
+            <div id="view-visual" class="view-content active"><div id="gantt-container"><div id="gantt-chart"></div></div></div>
+            <div id="view-spreadsheet" class="view-content"></div>
+            <div id="view-json" class="view-content"><textarea id="json-editor"></textarea></div>
+        </div>
+
+        <div id="status">
+            <div id="status-text">System Ready.</div>
+            <div id="confirm-del" class="confirm-group">
+                <span id="del-prompt">Really delete?</span>
+                <button id="del-yes" style="background:#7a2d2d">Yes</button>
+                <button id="del-no">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay">
+        <div class="overlay-content">
+            <h3 id="overlay-title">Edit Task</h3>
+            <div id="overlay-fields" style="display:flex; flex-direction: column; gap:10px;">
+                <label>Name: <input type="text" id="overlay-input"></label>
+                <div id="progress-container" style="display:flex; align-items:center; gap:10px;">
+                    Progress: <input type="range" id="overlay-progress" min="0" max="100" style="flex-grow:1; cursor:pointer"> <span id="progress-val">0%</span>
+                </div>
+                <div>Color Palette:</div>
+                <div id="palette-grid"></div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content: flex-end;">
+                <button id="overlay-cancel">Cancel</button>
+                <button id="overlay-ok" style="background:var(--accent-color)">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
