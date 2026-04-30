@@ -48,7 +48,7 @@ const state = {
     flatTasks: [], // Cached flattened tasks
     foldedIds: new Set(),
     selectedTaskFullId: null,
-    zoomLevel: 60,
+    zoomLevel: 70,
     dragMode: null,
     draggedTask: null,
     draggedRowFullId: null,

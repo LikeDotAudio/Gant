@@ -77,7 +77,7 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
     const startIdx = Math.max(0, Math.floor((scrollTop - headerHeight) / rowHeight));
     const endIdx = Math.min(flat.length, Math.ceil((scrollTop + viewportHeight - headerHeight) / rowHeight) + 1);
 
-    const stickyWidthPx = 35 + 35 + 35 + 35 + 60 + 80 + 280 + 90 + 90 + 50; 
+    const stickyWidthPx = 35 + 35 + 35 + 35 + 70 + 80 + 280 + 90 + 90 + 50; 
     const visibleStartDay = Math.max(0, Math.floor((scrollLeft - stickyWidthPx) / zoomLevel));
     const visibleEndDay = Math.min(totalDays, Math.ceil((scrollLeft + viewportWidth) / zoomLevel));
 
