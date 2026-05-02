@@ -1,4 +1,4 @@
-import * as gantt from '../Rows/index.js';
+import * as gantt from '../../Rows/index.js';
 
 export function editBar(fullId, projectData, el, render) {
     const task = gantt.findTask(projectData.roots, fullId);
@@ -14,6 +14,10 @@ export function editBar(fullId, projectData, el, render) {
     el.overlayInput.focus();
     el.overlayInput.select();
     el.overlayProgress.value = task.progress || 0;
+    
+    // Set the task ID field
+    el.overlayId.value = gantt.getTaskId(task);
+
     document.getElementById('progress-val').innerText = `${task.progress || 0}%`;
 
     const startInput = document.getElementById('overlay-start');
@@ -63,6 +67,10 @@ export function editBar(fullId, projectData, el, render) {
         task.name = el.overlayInput.value;
         task.progress = parseInt(el.overlayProgress.value);
         task.color = selectedColor;
+        
+        // Update task ID based on the task depth
+        const depth = flatTask ? flatTask.depth : 0;
+        gantt.setTaskId(task, el.overlayId.value, depth);
 
         if (startInput && endInput) {
             task.start = startInput.value;

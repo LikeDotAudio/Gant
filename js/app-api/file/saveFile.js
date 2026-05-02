@@ -1,6 +1,6 @@
 import { state } from '../../core/state.js';
 import { el } from '../../core/elements.js';
-import { showStatus } from '../../utils/status.js';
+import { showStatus } from '../../StatusBar/Status_update.js';
 import * as file from '../../file/index.js';
 
 export async function saveFile() { 

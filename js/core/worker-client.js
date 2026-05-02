@@ -1,7 +1,7 @@
 import { state } from './state.js';
 import { el } from './elements.js';
 import { render, getCurrentRequestId, setWorker } from './render.js';
-import { showStatus } from '../utils/status.js';
+import { showStatus } from '../StatusBar/Status_update.js';
 import { autoZoom, calculateTaskNameWidth } from '../utils/layout.js';
 import * as timeline from '../timeline/index.js';
 const worker = new Worker('js/worker.js?cb=' + Date.now(), { type: 'module' });

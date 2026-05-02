@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { el } from './elements.js';
-import { showStatus } from '../utils/status.js';
+import { showStatus } from '../StatusBar/Status_update.js';
 import * as timeline from '../timeline/index.js'; 
 import { renderSpreadsheet } from '../views/spreadsheet.js';
 import { renderPrinterView } from '../views/printer.js';
@@ -35,6 +35,15 @@ export function render(updateFlat = true) {
             renderSpreadsheet(state.projectData, document.getElementById('view-spreadsheet'));
         } else if (state.currentView === 'printer') {
             renderPrinterView(state.projectData, document.getElementById('view-printer'));
+        }
+        
+        // Update status bar with selection details
+        if (state.selectedTaskFullIds.size > 0) {
+            const count = state.selectedTaskFullIds.size;
+            const ids = Array.from(state.selectedTaskFullIds).join(', ');
+            showStatus(`Selected: ${count} task(s) - IDs: ${ids}`);
+        } else {
+            showStatus("System Ready.");
         }
     } catch (err) {
         console.error("Render error:", err);

@@ -2,7 +2,7 @@ import { el } from './elements.js';
 import { state } from './state.js';
 import { render } from './render.js';
 import { updateNav } from './worker-client.js';
-import { showStatus } from '../utils/status.js';
+import { showStatus } from '../StatusBar/Status_update.js';
 import { handleKeyboard } from '../handlers/keyboard.js';
 import { handleGanttClick } from '../handlers/gantt-click.js';
 import { handleGanttChange } from '../handlers/gantt-change.js';
