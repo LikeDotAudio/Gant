@@ -4,7 +4,7 @@ import { renderWBSColumns } from './renderWBSColumns.js';
 import { getTriangle } from '../columns/index.js';
 import { renderBar } from '../progressbar/index.js';
 let lastZoomLevel = null;
-export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullId, chartEl, flat, forceFull = true, projectMinStr = null, projectMaxStr = null) {
+export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullIds, chartEl, flat, forceFull = true, projectMinStr = null, projectMaxStr = null) {
     if (!projectData.roots || !flat) return;
     const container = document.getElementById('gantt-container');
     if (!container) return;
@@ -95,7 +95,7 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
         const l = Math.floor((s - minDate) / 86400000) * zoomLevel;
         const w = Math.max((t.duration || 1) * zoomLevel, 5);
         const triangle = getTriangle(t, t.isFolded);
-        const isSelected = selectedTaskFullId === t.fullId;
+        const isSelected = selectedTaskFullIds.has(t.fullId);
         const depthClass = `row-depth-${t.depth}`;
         const taskColor = t.resolvedColor || '#f4902c';
         rowH += `<div class="gantt-row ${isSelected?'selected-row':''} ${depthClass}" draggable="true" 

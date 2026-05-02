@@ -3,8 +3,11 @@ import { setupEventListeners } from './core/events.js';
 import { initAppAPI } from './core/app-api.js';
 import { loadFromPath } from './utils/persistence.js';
 import { render } from './core/render.js';
+import { setupMobile } from './Mobile/setup.js';
+
 export function initializeApp() {
     try {
+        setupMobile();
         initAppAPI();
         setupEventListeners();
         // Create Project Path Input in UI

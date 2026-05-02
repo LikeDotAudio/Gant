@@ -29,7 +29,7 @@ export function render(updateFlat = true) {
                 });
             } else {
                 // If flattening isn't required (e.g. scrolling), just re-render the viewable window.
-                timeline.renderGantt(state.projectData, state.zoomLevel, state.foldedIds, state.selectedTaskFullId, el.ganttChart, state.flatTasks, false, state.projectMin, state.projectMax);
+                timeline.renderGantt(state.projectData, state.zoomLevel, state.foldedIds, state.selectedTaskFullIds, el.ganttChart, state.flatTasks, false, state.projectMin, state.projectMax);
             }
         } else if (state.currentView === 'spreadsheet') {
             renderSpreadsheet(state.projectData, document.getElementById('view-spreadsheet'));

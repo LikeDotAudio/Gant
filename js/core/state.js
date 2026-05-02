@@ -5,7 +5,7 @@ export const state = {
     projectData: { roots: [], baseDate: new Date().toISOString().split('T')[0] },
     flatTasks: [], // Cached flattened tasks list for virtualized rendering
     foldedIds: new Set(),
-    selectedTaskFullId: null,
+    selectedTaskFullIds: new Set(),
     zoomLevel: 70, // Horizontal zoom scale for timeline bars
     dragMode: null,
     draggedTask: null,

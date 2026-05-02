@@ -1,0 +1,18 @@
+/* Hide navigator and other non-essential elements for mobile view */
+#gantt-navigator,
+.zoom-controls,
+.col-toggles {
+    display: none !important;
+}
+
+/* 
+  We will also hide the WBS columns that are not needed.
+*/
+.c-color,
+.c-dep,
+.c-prog,
+.c-start,
+.c-end,
+.c-dur {
+    display: none !important;
+}

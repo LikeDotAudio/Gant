@@ -21,7 +21,7 @@ export function handleGanttClick(e) {
             window.app.toggleFold(id, e);
             break;
         case 'selectTask':
-            window.app.selectTask(id);
+            window.app.selectTask(id, e);
             break;
         case 'editTask':
         case 'editColor':

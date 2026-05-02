@@ -18,8 +18,21 @@ export function setTaskId(t, val, depth) {
     else t.id = val;
 }
 export function refreshIds(tasks, depth = 0) { 
-    tasks.forEach((t, i) => { 
-        setTaskId(t, (i + 1).toString(), depth);
+    const usedIds = new Set();
+    tasks.forEach((t) => {
+        let baseId = getTaskId(t);
+        
+        // Ensure the ID is unique within this level
+        let newId = baseId;
+        let counter = 1;
+        while (usedIds.has(newId)) {
+            newId = `${baseId}_${counter}`;
+            counter++;
+        }
+        
+        setTaskId(t, newId, depth);
+        usedIds.add(newId);
+        
         const children = getChildren(t);
         if (children) refreshIds(children, depth + 1); 
     }); 

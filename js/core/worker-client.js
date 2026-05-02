@@ -27,7 +27,7 @@ worker.onmessage = (e) => {
             const nameW = calculateTaskNameWidth(state.flatTasks);
             document.documentElement.style.setProperty('--name-w', `${nameW}px`);
         }
-        timeline.renderGantt(state.projectData, state.zoomLevel, state.foldedIds, state.selectedTaskFullId, el.ganttChart, state.flatTasks, true, state.projectMin, state.projectMax);
+        timeline.renderGantt(state.projectData, state.zoomLevel, state.foldedIds, state.selectedTaskFullIds, el.ganttChart, state.flatTasks, true, state.projectMin, state.projectMax);
         if (!updateNav && state.flatTasks.length > 0) {
             const container = document.getElementById('gantt-container');
             updateNav = timeline.initNavigator(container, el.ganttChart);
