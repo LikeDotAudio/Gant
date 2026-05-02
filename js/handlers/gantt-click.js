@@ -8,6 +8,7 @@ import { render } from '../core/render.js';
  * @param {Event} e - The DOM click event.
  */
 export function handleGanttClick(e) {
+    console.log(`[handleGanttClick] Event triggered`, { type: e.type, target: e.target });
     const target = e.target;
     const actionEl = target.dataset.action ? target : target.closest('[data-action]');
     const action = actionEl?.dataset.action;

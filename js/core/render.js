@@ -13,6 +13,7 @@ export function incrementRequestId() { return ++currentRequestId; }
 // Main entry point for updating the screen.
 // updateFlat triggers a fresh layout calculation via the web worker.
 export function render(updateFlat = true) {
+    console.log(`[render] Visual frame update`, { view: state.currentView, updateFlat });
     try {
         if (state.currentView === 'visual') {
             if (updateFlat) {

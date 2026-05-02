@@ -1,3 +1,4 @@
+import { log } from "./../utils/logger.js";
 import { findParentAndIndex } from './findParentAndIndex.js';
 
 /**
@@ -7,7 +8,7 @@ import { findParentAndIndex } from './findParentAndIndex.js';
  * @param {string} fullId 
  * @returns {boolean}
  */
-export function moveUp(roots, fullId) {
+export function moveUp(roots, fullId) { log("moveUp", "Moving task up", { fullId });
     const { parent, index } = findParentAndIndex(roots, fullId);
     
     if (parent && index > 0) {

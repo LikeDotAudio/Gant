@@ -12,6 +12,7 @@ const { fold } = columns;
  * @param {Event} e - The keyboard event.
  */
 export function handleKeyboard(e) {
+    console.log(`[handleKeyboard] Event triggered`, { type: e.type, key: e.key });
     if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
     if (state.currentView !== 'visual') return;
 

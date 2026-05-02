@@ -1,4 +1,7 @@
+import { log } from '../utils/logger.js';
+
 export function handleMove(me, barEl, originalLeft, dragStartX, dragStartY) {
+    log("handleMove", "Handling mouse move during drag", { me, barEl, originalLeft, dragStartX, dragStartY });
     const deltaX = me.clientX - dragStartX;
     const deltaY = me.clientY - dragStartY;
     barEl.style.left = `${originalLeft + deltaX}px`;
