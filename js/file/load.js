@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/file functionality.
+ */
+
 import * as fs from './system.js';
 import { renderJSONView } from '../views/json-view.js';
 

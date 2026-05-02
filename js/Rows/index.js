@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Handles WBS task operations such as adding, deleting, moving, and searching within the hierarchy.
+ */
+
 import { getChildren } from './getChildren.js';
 import { setChildren } from './setChildren.js';
 import { getWeekNumber } from './getWeekNumber.js';

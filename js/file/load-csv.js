@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/file functionality.
+ */
+
 export async function loadCSV(state, render, showStatus) {
     try {
         const [handle] = await window.showOpenFilePicker({

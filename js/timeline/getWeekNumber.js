@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 export function getWeekNumber(d) {
     d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));

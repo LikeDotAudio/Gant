@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/views functionality.
+ */
+
 export function renderPrinterView(projectData, container) {
     if (!container) {
         console.error("Printer view container not found!");

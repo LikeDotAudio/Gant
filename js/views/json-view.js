@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/views functionality.
+ */
+
 export function renderJSONView(projectData, container) {
     if (!container) return;
     container.value = JSON.stringify(projectData, null, 2);

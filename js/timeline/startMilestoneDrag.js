@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 export function startMilestoneDrag(e, index, projectData, zoomLevel, render) {
     e.stopPropagation();
     const milestone = projectData.milestones[index];

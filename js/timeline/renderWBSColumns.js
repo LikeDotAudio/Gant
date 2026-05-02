@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 import { getResistorClass } from './getResistorClass.js';
 import { formatDate } from './formatDate.js';
 

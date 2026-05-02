@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Core application utility/init module.
+ */
+
 import * as gantt from './Rows/index.js';
 
 self.onmessage = (e) => {

@@ -1,3 +1,8 @@
+<!--
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Project documentation and overview.
+ -->
+
 # Gantt WBS Workspace
 
 A high-performance, dark-mode Gantt chart and Work Breakdown Structure (WBS) workspace built for speed, scalability, and visual clarity.

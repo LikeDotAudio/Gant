@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/progressbar functionality.
+ */
+
 export function handleResizeLeft(me, barEl, originalLeft, originalWidth, dragStartX, zoomLevel) {
     const deltaX = me.clientX - dragStartX;
     const newWidth = Math.max(zoomLevel / 4, originalWidth - deltaX);

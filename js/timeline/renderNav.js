@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 import { getStickyWidthPx } from './getStickyWidthPx.js';
 
 export function renderNav(canvas, viewport, container, chart, flatTasks, minStr, maxStr, zoomLevel) {

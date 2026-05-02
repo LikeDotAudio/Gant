@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 import { renderAxis } from './renderAxis.js';
 import { getStickyWidthPx } from './getStickyWidthPx.js';
 import { renderWBSColumns } from './renderWBSColumns.js';

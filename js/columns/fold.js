@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/columns functionality.
+ */
+
 import * as gantt from '../Rows/index.js';
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Core application utility/init module.
+ */
+
 import { state } from './state.js';
 import { el } from './elements.js';
 import { render, getCurrentRequestId, setWorker } from './render.js';

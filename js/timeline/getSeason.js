@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 export function getSeason(date) {
     const month = date.getMonth();
     const day = date.getDate();

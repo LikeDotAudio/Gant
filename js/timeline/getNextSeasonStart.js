@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 export function getNextSeasonStart(date) {
     const year = date.getFullYear();
     const spring = new Date(year, 2, 20);

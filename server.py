@@ -1,3 +1,8 @@
+"""
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Simple local web server to serve application files.
+"""
+
 import http.server
 import socketserver
 import webbrowser

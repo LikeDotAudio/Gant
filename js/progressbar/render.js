@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/progressbar functionality.
+ */
+
 import { getContrastColor } from './getContrastColor.js';
 
 export function renderBar(t, l, w, taskColor, isSelected) {

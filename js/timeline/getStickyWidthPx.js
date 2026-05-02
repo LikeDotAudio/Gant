@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 export function getStickyWidthPx() {
     const root = document.documentElement;
     const cols = ['root', 'parent', 'child', 'sibling', 'color', 'dep', 'name', 'prog', 'start', 'end', 'dur'];

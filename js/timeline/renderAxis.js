@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/timeline functionality.
+ */
+
 import { getSeason } from './getSeason.js';
 import { getNextSeasonStart } from './getNextSeasonStart.js';
 import { getQuarter } from './getQuarter.js';

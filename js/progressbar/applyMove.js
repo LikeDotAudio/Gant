@@ -1,3 +1,8 @@
+/**
+ * GANTT software is free to use and copy as needed.
+ * Purpose: Provides functionality related to js/progressbar functionality.
+ */
+
 import { moveTaskVertically } from './moveTaskVertically.js';
 
 export function applyMove(me, draggedTask, originalStart, dragStartX, dragStartY, zoomLevel, rowHeight, projectData, fullId, flat) {
@@ -6,7 +11,10 @@ export function applyMove(me, draggedTask, originalStart, dragStartX, dragStartY
     const dayDelta = Math.round(deltaX / (zoomLevel / 4)) * 0.25;
 
     const newTime = originalStart.getTime() + (dayDelta * 86400000);
-    draggedTask.start = new Date(newTime).toISOString();
+    const newDate = new Date(newTime);
+    if (!isNaN(newDate.getTime())) {
+        draggedTask.start = newDate.toISOString();
+    }
 
     // Vertical movement (reordering)
     const rowDelta = Math.round(deltaY / rowHeight);
