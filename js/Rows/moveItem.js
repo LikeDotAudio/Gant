@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Handles WBS task operations such as adding, deleting, moving, and searching within the hierarchy.
- */
-
 import { findParentAndIndex } from './findParentAndIndex.js';
 import { getFullIdOfParent } from './getFullIdOfParent.js';
 import { findTask } from './findTask.js';
@@ -11,6 +6,7 @@ import { setChildren } from './setChildren.js';
 
 /**
  * Moves an item within the hierarchical task tree.
+ * 
  * @param {Array} roots - The root tasks array.
  * @param {string} sourceId - The full ID of the task to move.
  * @param {string} targetId - The full ID of the target location.

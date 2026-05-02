@@ -1,18 +1,10 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/progressbar functionality.
- */
-
 import { getContrastColor } from './getContrastColor.js';
-
 export function renderBar(t, l, w, taskColor, isSelected) {
     const textColor = getContrastColor(taskColor);
-    
     // Level configuration
     let barH = 14;
     let barTop = 5;
     let textPos = 'right'; // default
-    
     if (t.depth === 0) { // Root
         barH = 10; barTop = 7; textPos = 'overlay';
     } else if (t.depth === 1) { // Parent
@@ -22,10 +14,8 @@ export function renderBar(t, l, w, taskColor, isSelected) {
     } else { // Sibling (Leaf)
         barH = 20; barTop = 2; textPos = 'right';
     }
-
     let textHtml = '';
     const label = `${t.name} (${t.progress || 0}%)`;
-    
     if (textPos === 'overlay') {
         textHtml = `<div class="bar-content overlay-text" style="color:${textColor}">${label}</div>`;
     } else if (textPos === 'left') {
@@ -33,7 +23,6 @@ export function renderBar(t, l, w, taskColor, isSelected) {
     } else { // right
         textHtml = `<div class="bar-label-right" style="left:${l + w}px;">${label}</div>`;
     }
-
     return `
         <div class="task-bars-cell" onmouseenter="this.parentElement.draggable=false" onmouseleave="this.parentElement.draggable=true">
             ${textPos === 'left' ? textHtml : ''}

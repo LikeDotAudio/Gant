@@ -1,12 +1,6 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/timeline functionality.
- */
-
 export function getSeason(date) {
     const month = date.getMonth();
     const day = date.getDate();
-
     // Canadian Seasons (Astronomical start dates)
     // Spring: March 20, Summer: June 21, Fall: Sept 22, Winter: Dec 21
     if ((month === 2 && day >= 20) || (month > 2 && month < 5) || (month === 5 && day < 21)) {

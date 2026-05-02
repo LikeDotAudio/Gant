@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/file functionality.
- */
-
 export async function loadCSV(state, render, showStatus) {
     try {
         const [handle] = await window.showOpenFilePicker({
@@ -10,20 +5,17 @@ export async function loadCSV(state, render, showStatus) {
         });
         const file = await handle.getFile();
         const text = await file.text();
-        
         // Simple CSV parser
         const lines = text.split('\n').map(l => l.trim()).filter(l => l);
         const roots = [];
         const milestones = [];
         const taskMap = new Map();
         let mode = 'tasks';
-
         lines.slice(1).forEach(line => {
             if (line.toLowerCase().startsWith('milestone,date')) {
                 mode = 'milestones';
                 return;
             }
-
             // More robust CSV splitting to handle quoted commas
             const parts = [];
             let current = '';
@@ -39,17 +31,14 @@ export async function loadCSV(state, render, showStatus) {
                 }
             }
             parts.push(current.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
-            
             if (mode === 'milestones') {
                 if (parts.length >= 2) {
                     milestones.push({ name: parts[0], date: parts[1] });
                 }
                 return;
             }
-
             const [id, color, dependency, name, progress, start, duration] = parts;
             if (!id || id === 'ID') return; // Skip header or empty
-
             const task = { 
                 id: id.split('.').pop(), 
                 name, 
@@ -60,7 +49,6 @@ export async function loadCSV(state, render, showStatus) {
                 duration: parseInt(duration) || 1
             };
             taskMap.set(id, task);
-
             const idParts = id.split('.');
             if (idParts.length === 1) {
                 roots.push(task);
@@ -86,7 +74,6 @@ export async function loadCSV(state, render, showStatus) {
                 }
             }
         });
-
         state.projectData.roots = roots;
         state.projectData.milestones = milestones;
         render();

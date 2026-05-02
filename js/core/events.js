@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Core application utility/init module.
- */
-
 import { el } from './elements.js';
 import { state } from './state.js';
 import { render } from './render.js';
@@ -19,7 +14,6 @@ import {
     handleGanttDragLeave, 
     handleGanttDrop 
 } from '../handlers/gantt-drag.js';
-
 export function setupEventListeners() {
     window.addEventListener('keydown', handleKeyboard);
     el.overlayCancel.onclick = () => { el.overlay.style.display = 'none'; };
@@ -30,7 +24,6 @@ export function setupEventListeners() {
     el.delNo.onclick = () => {
         showStatus("Delete cancelled.");
     };
-
     if (el.ganttChart) {
         const container = document.getElementById('gantt-container');
         if (container) {
@@ -44,7 +37,6 @@ export function setupEventListeners() {
                     });
                 }
             }, { passive: true });
-
             container.addEventListener('wheel', (e) => {
                 const overTimeline = e.target.closest('.gantt-timeline');
                 if (e.ctrlKey || overTimeline) {
@@ -52,7 +44,6 @@ export function setupEventListeners() {
                     window.app.zoom(e.deltaY > 0 ? -10 : 10);
                 }
             }, { passive: false });
-
             let isPanning = false;
             let startX, startY, startScrollLeft, startScrollTop;
             container.addEventListener('mousedown', (e) => {
@@ -75,12 +66,10 @@ export function setupEventListeners() {
                 if (e.button === 1) { isPanning = false; container.style.cursor = 'auto'; }
             });
         }
-
         el.ganttChart.addEventListener('click', handleGanttClick);
         el.ganttChart.addEventListener('change', handleGanttChange);
         el.ganttChart.addEventListener('mousedown', handleGanttMouseDown);
         el.ganttChart.addEventListener('dblclick', handleGanttDblClick);
-        
         el.ganttChart.addEventListener('mousemove', (e) => {
             const isTimeline = e.target.closest('.gantt-timeline') || e.target.closest('.task-bars-cell');
             const hoverLine = el.ganttChart.querySelector('.hover-line');
@@ -90,12 +79,10 @@ export function setupEventListeners() {
                 hoverLine.style.display = 'block';
             } else if (hoverLine) { hoverLine.style.display = 'none'; }
         });
-        
         el.ganttChart.addEventListener('dragstart', handleGanttDragStart);
         el.ganttChart.addEventListener('dragover', handleGanttDragOver);
         el.ganttChart.addEventListener('dragleave', handleGanttDragLeave);
         el.ganttChart.addEventListener('drop', handleGanttDrop);
-        
         el.ganttChart.addEventListener('mouseover', (e) => {
             const bar = e.target.closest('.bar');
             if (bar) { const row = bar.closest('.gantt-row'); if (row) row.draggable = false; }

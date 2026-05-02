@@ -1,13 +1,9 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/columns functionality.
- */
-
 import * as gantt from '../Rows/index.js';
 
 /**
  * Folds or unfolds the entire tree to a specific depth.
  * It clears existing folds and then folds all nodes at or below the target depth.
+ * 
  * @param {Array} roots 
  * @param {Set} foldedIds 
  * @param {number} targetDepth 
@@ -21,18 +17,16 @@ export function foldToLevel(roots, foldedIds, targetDepth) {
     const nodesToFold = allTasks.filter(t => t.depth >= targetDepth && t.hasChildren);
     
     if (nodesToFold.length === 0) {
-        // If no nodes to fold at this level, maybe we want to unfold everything?
-        // But usually, clicking "Root" should at least hide children if they exist.
         foldedIds.clear();
         return true;
     }
-
+    
     // Check if this specific state is already applied
     const isAlreadyFolded = nodesToFold.every(t => foldedIds.has(t.fullId));
     const isExactMatch = foldedIds.size === nodesToFold.length && isAlreadyFolded;
-
+    
     foldedIds.clear();
-
+    
     if (!isExactMatch) {
         nodesToFold.forEach(t => foldedIds.add(t.fullId));
     }
@@ -48,9 +42,9 @@ export function foldToLevel(roots, foldedIds, targetDepth) {
 export function keyboardFold(roots, foldedIds, selectedId, direction) {
     const task = gantt.findTask(roots, selectedId);
     if (!task) return { changed: false, newSelection: null };
-
+    
     const hasChildren = gantt.getChildren(task)?.length > 0;
-
+    
     if (direction === 'left') {
         if (hasChildren && !foldedIds.has(selectedId)) {
             foldedIds.add(selectedId);
@@ -66,7 +60,7 @@ export function keyboardFold(roots, foldedIds, selectedId, direction) {
             return { changed: true, newSelection: null };
         }
     }
-
+    
     return { changed: false, newSelection: null };
 }
 

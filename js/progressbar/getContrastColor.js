@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/progressbar functionality.
- */
-
 export function getContrastColor(hex) {
     if (!hex || hex.length < 6) return 'white';
     if (hex.startsWith('rgba') || hex === 'transparent') return 'white';

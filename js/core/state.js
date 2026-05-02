@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Central state management for the application, storing task hierarchies, view settings, and persistence keys.
- */
-
 // Central state object tracks the application's runtime data.
 // It is separate from the DOM to allow business logic to run independently of UI changes.
 export const state = {

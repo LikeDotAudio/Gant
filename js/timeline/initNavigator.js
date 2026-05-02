@@ -1,16 +1,16 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/timeline functionality.
- */
-
 import { renderNav } from './renderNav.js';
 
 /**
  * Mini-map Navigator for Gantt Chart
  * Provides a 150x250 overview in the bottom right.
+ * 
+ * @param {HTMLElement} containerEl 
+ * @param {HTMLElement} ganttChartEl 
+ * @returns {Function} update function
  */
 export function initNavigator(containerEl, ganttChartEl) {
     let navContainer = document.getElementById('gantt-navigator');
+    
     if (!navContainer) {
         navContainer = document.createElement('div');
         navContainer.id = 'gantt-navigator';
@@ -50,7 +50,7 @@ export function initNavigator(containerEl, ganttChartEl) {
             const newH = Math.max(100, startH + dy);
             navContainer.style.width = `${newW}px`;
             navContainer.style.height = `${newH}px`;
-            // Trigger a re-render from the app state if possible, or just update viewport
+            
             const vL = containerEl.scrollLeft * (navContainer.clientWidth / ganttChartEl.scrollWidth);
             const vT = containerEl.scrollTop * (navContainer.clientHeight / ganttChartEl.scrollHeight);
             viewport.style.left = `${vL}px`;
@@ -60,7 +60,7 @@ export function initNavigator(containerEl, ganttChartEl) {
         const onMouseUp = () => {
             window.removeEventListener('mousemove', onMouseMove);
             window.removeEventListener('mouseup', onMouseUp);
-            // Trigger a full update to redraw canvas
+            
             if (window.app && typeof window.app.renderNavigator === 'function') {
                 window.app.renderNavigator();
             }
@@ -71,18 +71,12 @@ export function initNavigator(containerEl, ganttChartEl) {
     });
 
     containerEl.addEventListener('scroll', () => {
-        // We need the data to re-render the viewport box correctly on scroll
-        // This will be triggered by app.js render loop, but we also want immediate response
         const vL = containerEl.scrollLeft * (canvas.width / ganttChartEl.scrollWidth);
         const vT = containerEl.scrollTop * (canvas.height / ganttChartEl.scrollHeight);
         viewport.style.left = `${vL}px`;
         viewport.style.top = `${vT}px`;
     });
 
-    window.addEventListener('resize', () => {
-        // Force a full update if we had the data, otherwise wait for next render
-    });
-    
     // Allow clicking/dragging on navigator to scroll main view
     navContainer.addEventListener('mousedown', (e) => {
         const handleMove = (me) => {

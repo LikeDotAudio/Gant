@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/file functionality.
- */
-
 export async function openFile() {
     // Modern API (HTTPS or localhost only)
     if (typeof window.showOpenFilePicker === 'function') {
@@ -22,7 +17,6 @@ export async function openFile() {
             throw err;
         }
     }
-
     // Fallback for HTTP / non-secure contexts
     return new Promise((resolve) => {
         const input = document.createElement('input');
@@ -40,7 +34,6 @@ export async function openFile() {
         input.click();
     });
 }
-
 export async function writeFile(fileHandle, content) {
     if (fileHandle && typeof fileHandle.createWritable === 'function') {
         const writable = await fileHandle.createWritable();
@@ -52,7 +45,6 @@ export async function writeFile(fileHandle, content) {
         downloadFile(content, name, 'application/json');
     }
 }
-
 export async function saveFileAs(content, suggestedName = "project.json") {
     if (typeof window.showSaveFilePicker === 'function') {
         try {
@@ -70,12 +62,10 @@ export async function saveFileAs(content, suggestedName = "project.json") {
             throw err;
         }
     }
-
     // Fallback: Trigger a download
     downloadFile(content, suggestedName, 'application/json');
     return { handle: null, name: suggestedName };
 }
-
 export function downloadFile(content, fileName, contentType) {
     const a = document.createElement("a");
     const file = new Blob([content], { type: contentType });

@@ -1,13 +1,6 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Core application utility/init module.
- */
-
 import * as gantt from './Rows/index.js';
-
 self.onmessage = (e) => {
     const { action, payload } = e.data;
-    
     if (action === 'flatten') {
         try {
             const result = gantt.getFlattenedProject(payload.roots, payload.options);

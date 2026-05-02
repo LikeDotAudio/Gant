@@ -1,19 +1,12 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Core application utility/init module.
- */
-
 import { state } from './core/state.js';
 import { setupEventListeners } from './core/events.js';
 import { initAppAPI } from './core/app-api.js';
 import { loadFromPath } from './utils/persistence.js';
 import { render } from './core/render.js';
-
 export function initializeApp() {
     try {
         initAppAPI();
         setupEventListeners();
-        
         // Create Project Path Input in UI
         const controls = document.querySelector('.col-toggles');
         if (controls) {
@@ -31,7 +24,6 @@ export function initializeApp() {
                 window.app.loadFromPath();
             };
         }
-
         window.app.loadFromPath();
         console.log("Gantt App initialized successfully.");
     } catch (err) {

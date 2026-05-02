@@ -1,14 +1,8 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Core application utility/init module.
- */
-
 import { state } from '../core/state.js';
 import { el } from '../core/elements.js';
 import { showStatus } from './status.js';
 import { renderJSONView } from '../views/json-view.js';
 import * as gantt from '../Rows/index.js';
-
 export function persistState(force = false) {
     state.changeCount++;
     if (force || state.changeCount >= 4) {
@@ -25,7 +19,6 @@ export function persistState(force = false) {
         showStatus(`Change tracked (${state.changeCount}/4 to save)`);
     }
 }
-
 export function loadFromPath(renderCallback) {
     const key = `gantt_autosave_${state.projectPath}`;
     const savedData = localStorage.getItem(key);
@@ -45,7 +38,6 @@ export function loadFromPath(renderCallback) {
         loadSampleData(renderCallback);
     }
 }
-
 export function loadSampleData(renderCallback) {
     fetch('sample.json')
         .then(response => response.json())

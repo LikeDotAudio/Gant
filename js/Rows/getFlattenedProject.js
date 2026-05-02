@@ -1,10 +1,4 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Handles WBS task operations such as adding, deleting, moving, and searching within the hierarchy.
- */
-
 import { flattenTasks } from './flattenTasks.js';
-
 export function getFlattenedProject(tasks, options) {
     const flat = flattenTasks(tasks, 0, "", options, []);
     let min = null;
@@ -16,14 +10,11 @@ export function getFlattenedProject(tasks, options) {
             if (!isNaN(s.getTime()) && (!min || s < min)) min = s;
             if (!isNaN(e.getTime()) && (!max || e > max)) max = e;
         });
-        
         if (min && !isNaN(min.getTime())) {
             const minCopy = new Date(min.getTime());
             minCopy.setDate(minCopy.getDate() - 5);
-            
             const oneYearLater = new Date(minCopy);
             oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
-            
             if (!max || max > oneYearLater) {
                 max = oneYearLater;
             } else {

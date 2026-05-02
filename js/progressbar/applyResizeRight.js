@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/progressbar functionality.
- */
-
 export function applyResizeRight(me, draggedTask, originalDuration, dragStartX, zoomLevel) {
     const deltaX = me.clientX - dragStartX;
     const dayDelta = Math.round(deltaX / (zoomLevel / 4)) * 0.25;

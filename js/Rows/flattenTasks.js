@@ -1,18 +1,10 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Handles WBS task operations such as adding, deleting, moving, and searching within the hierarchy.
- */
-
 import { getChildren } from './getChildren.js';
 import { getTaskId } from './getTaskId.js';
-
 export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, result = [], inheritedColor = null) {
     const { rootId = null, baseDate = null, foldedIds = new Set() } = options;
-    
     const globalBase = (baseDate && typeof baseDate === 'string' && !isNaN(new Date(baseDate).getTime())) 
         ? baseDate 
         : new Date().toISOString().split('T')[0];
-    
     let runner;
     try {
         runner = new Date(globalBase.includes('T') ? globalBase : globalBase + 'T00:00:00');
@@ -20,26 +12,20 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
     } catch (e) {
         runner = new Date();
     }
-
     if (!tasks) return result;
     const safeFoldedIds = (foldedIds instanceof Set) ? foldedIds : new Set();
-
     tasks.forEach((t) => {
         const tid = getTaskId(t);
         const fullId = (parentId ? `${parentId}.${tid}` : tid) || "0";
         const parts = fullId.split('.');
-        
         if (t.start) {
             const parsedStart = new Date(t.start.includes('T') ? t.start : t.start + 'T00:00:00');
             if (!isNaN(parsedStart.getTime())) runner = parsedStart;
         }
-
         const childrenArr = getChildren(t);
         const hasChildren = (childrenArr && childrenArr.length > 0);
         const isFolded = safeFoldedIds.has(fullId);
-        
         const taskColor = t.color || inheritedColor || '#f4902c';
-
         const taskEntry = { 
             name: t.name,
             progress: t.progress,
@@ -59,24 +45,20 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
             isFolded,
             calculatedStart: runner.toISOString()
         };
-
         if (hasChildren && !isFolded) {
             const startIdx = result.length;
             result.push(taskEntry); 
-            
             flattenTasks(childrenArr, depth + 1, fullId, {
                 rootId: parts[0],
                 baseDate: taskEntry.calculatedStart,
                 foldedIds: safeFoldedIds
             }, result, taskColor);
-            
             const children = result.slice(startIdx + 1);
             if (children.length > 0) {
                 const validDates = children
                     .map(c => [new Date(c.calculatedStart), new Date(c.calculatedEnd)])
                     .flat()
                     .filter(d => !isNaN(d.getTime()));
-
                 if (validDates.length > 0) {
                     const minChild = new Date(Math.min(...validDates));
                     const maxChild = new Date(Math.max(...validDates));
@@ -93,10 +75,8 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
             taskEntry.duration = d;
             result.push(taskEntry);
         }
-        
         const ownDuration = (t.duration !== undefined) ? t.duration : 1;
         const waterfallEnd = new Date(new Date(taskEntry.calculatedStart).getTime() + (ownDuration * 86400000));
-        
         if (!isNaN(waterfallEnd.getTime())) runner = waterfallEnd;
     });
     return result;

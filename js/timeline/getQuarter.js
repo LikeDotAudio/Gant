@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/timeline functionality.
- */
-
 export function getQuarter(date) {
     const month = date.getMonth();
     if (month < 3) return "Q1";

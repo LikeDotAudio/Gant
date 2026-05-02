@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/timeline functionality.
- */
-
 export function formatDate(isoStr) {
     if (!isoStr) return '';
     const d = new Date(isoStr);

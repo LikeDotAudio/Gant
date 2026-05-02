@@ -1,23 +1,15 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Main rendering orchestrator. It manages switching between visual, spreadsheet, printer, and JSON views.
- */
-
 import { state } from './state.js';
 import { el } from './elements.js';
 import { showStatus } from '../utils/status.js';
 import * as timeline from '../timeline/index.js'; 
 import { renderSpreadsheet } from '../views/spreadsheet.js';
 import { renderPrinterView } from '../views/printer.js';
-
 // Web worker reference for offloading expensive layout calculations.
 let workerRef = null;
 export function setWorker(w) { workerRef = workerRef || w; }
-
 let currentRequestId = 0;
 export function getCurrentRequestId() { return currentRequestId; }
 export function incrementRequestId() { return ++currentRequestId; }
-
 // Main entry point for updating the screen.
 // updateFlat triggers a fresh layout calculation via the web worker.
 export function render(updateFlat = true) {

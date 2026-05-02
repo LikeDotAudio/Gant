@@ -1,9 +1,4 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Handles UI layout calculations such as sticky column widths, auto-zoom, and task name widths.
- */
 import { state } from '../core/state.js';
-
 export function getStickyWidthPx() {
     const root = document.documentElement;
     // Define the list of column names used in the Gantt chart layout
@@ -15,7 +10,6 @@ export function getStickyWidthPx() {
     });
     return total;
 }
-
 export function autoZoom() {
     const container = document.getElementById('gantt-container');
     if (!container) return;
@@ -23,19 +17,16 @@ export function autoZoom() {
     const stickyWidthPx = getStickyWidthPx(); 
     // Calculate the available width for the timeline after accounting for sticky columns
     const timelineWidth = viewportWidth - stickyWidthPx;
-    
     if (timelineWidth > 200) {
         let targetZoom = Math.floor(timelineWidth / 28);
         state.zoomLevel = Math.max(20, Math.min(100, targetZoom));
     }
 }
-
 export function calculateTaskNameWidth(flatTasks) {
     if (!flatTasks || flatTasks.length === 0) return 280;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     ctx.font = "12.8px 'Segoe UI', sans-serif";
-
     let maxWidth = 100;
     flatTasks.forEach(t => {
         const indent = (t.depth || 0) * 10;

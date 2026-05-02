@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Handles WBS task operations such as adding, deleting, moving, and searching within the hierarchy.
- */
-
 import { findParentAndIndex } from './findParentAndIndex.js';
 import { getFullIdOfParent } from './getFullIdOfParent.js';
 import { findTask } from './findTask.js';
@@ -11,9 +6,11 @@ import { setChildren } from './setChildren.js';
 
 /**
  * Changes the indentation level of a task (Promote/Demote).
+ * 
  * @param {Array} roots 
  * @param {string} fullId 
  * @param {string} direction - 'left' (promote) or 'right' (demote)
+ * @returns {boolean}
  */
 export function shiftItem(roots, fullId, direction) {
     const { parent, index } = findParentAndIndex(roots, fullId);

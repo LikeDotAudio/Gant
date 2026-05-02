@@ -1,8 +1,3 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Central cache for all DOM elements used by the application, minimizing querySelector overhead.
- */
-
 // We cache these references during initialization to prevent repetitive DOM queries,
 // which is a performance-critical step for large Gantt charts.
 export const el = {

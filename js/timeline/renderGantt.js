@@ -1,33 +1,21 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/timeline functionality.
- */
-
 import { renderAxis } from './renderAxis.js';
 import { getStickyWidthPx } from './getStickyWidthPx.js';
 import { renderWBSColumns } from './renderWBSColumns.js';
 import { getTriangle } from '../columns/index.js';
 import { renderBar } from '../progressbar/index.js';
-
 let lastZoomLevel = null;
-
 export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullId, chartEl, flat, forceFull = true, projectMinStr = null, projectMaxStr = null) {
     if (!projectData.roots || !flat) return;
-
     const container = document.getElementById('gantt-container');
     if (!container) return;
-
     const minDate = projectMinStr ? new Date(projectMinStr + 'T00:00:00') : new Date();
     const maxDate = projectMaxStr ? new Date(projectMaxStr + 'T00:00:00') : new Date();
     const totalDays = Math.ceil((maxDate - minDate) / 86400000);
-    
     if (lastZoomLevel !== zoomLevel) {
         document.documentElement.style.setProperty('--chart-col-width', `${zoomLevel}px`);
         lastZoomLevel = zoomLevel;
     }
-    
     const stickyWidth = `calc(var(--root-w) + var(--parent-w) + var(--child-w) + var(--sibling-w) + var(--color-w) + var(--dep-w) + var(--name-w) + var(--prog-w) + var(--start-w) + var(--end-w) + var(--dur-w))`;
-    
     const rowHeight = 24;
     const headerHeight = 108; // Adjusted for Seasons + Quarters + Months + Weeks + Days
     const totalHeight = headerHeight + (flat.length * rowHeight);
@@ -35,14 +23,11 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
     const viewportWidth = container.clientWidth || 1000;
     const scrollTop = container.scrollTop;
     const scrollLeft = container.scrollLeft;
-    
     const startIdx = Math.max(0, Math.floor((scrollTop - headerHeight) / rowHeight));
     const endIdx = Math.min(flat.length, Math.ceil((scrollTop + viewportHeight - headerHeight) / rowHeight) + 1);
-
     const stickyWidthPx = getStickyWidthPx();
     const visibleStartDay = Math.max(0, Math.floor((scrollLeft - stickyWidthPx) / zoomLevel));
     const visibleEndDay = Math.min(totalDays, Math.ceil((scrollLeft + viewportWidth) / zoomLevel));
-
     if (!chartEl.querySelector('.gantt-rows-container')) {
         chartEl.innerHTML = `
             <div class="gantt-header-wrapper" style="position: sticky; top: 0; z-index: 200; background: var(--header-bg);"></div>
@@ -52,17 +37,13 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
         `;
         forceFull = true;
     }
-
     const headerWrapper = chartEl.querySelector('.gantt-header-wrapper');
     const rowsContainer = chartEl.querySelector('.gantt-rows-container');
     const decorContainer = chartEl.querySelector('.gantt-decorations-container');
-
     chartEl.style.height = `${totalHeight}px`;
     chartEl.style.width = `calc(${stickyWidth} + ${totalDays * zoomLevel}px)`;
-
     const lastScrollLeft = headerWrapper.dataset.lastScrollLeft || "-1";
     const needsHeaderUpdate = forceFull || Math.abs(parseFloat(lastScrollLeft) - scrollLeft) > 1;
-
     if (needsHeaderUpdate) {
         headerWrapper.dataset.lastScrollLeft = scrollLeft;
         let h = `<div class="gantt-header">
@@ -82,7 +63,6 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
             </div>
         </div>`;
         headerWrapper.innerHTML = h;
-
         if (forceFull) {
             let dH = "";
             const today = new Date();
@@ -90,7 +70,6 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
             if (todayX >= 0 && todayX <= totalDays * zoomLevel) {
                 dH += `<div class="today-line" style="left: calc(${stickyWidth} + ${todayX}px); height: ${totalHeight}px"></div>`;
             }
-
             if (projectData.milestones) {
                 projectData.milestones.forEach((m, idx) => {
                     const mDate = new Date(m.date + 'T00:00:00');
@@ -109,7 +88,6 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
             decorContainer.innerHTML = dH;
         }
     }
-
     let rowH = "";
     for (let i = startIdx; i < endIdx; i++) {
         const t = flat[i];
@@ -120,7 +98,6 @@ export function renderGantt(projectData, zoomLevel, foldedIds, selectedTaskFullI
         const isSelected = selectedTaskFullId === t.fullId;
         const depthClass = `row-depth-${t.depth}`;
         const taskColor = t.resolvedColor || '#f4902c';
-
         rowH += `<div class="gantt-row ${isSelected?'selected-row':''} ${depthClass}" draggable="true" 
                 data-id="${t.fullId}" 
                 style="position: absolute; top: ${headerHeight + i * rowHeight}px; left: 0; right: 0;">

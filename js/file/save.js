@@ -1,10 +1,4 @@
-/**
- * GANTT software is free to use and copy as needed.
- * Purpose: Provides functionality related to js/file functionality.
- */
-
 import * as fs from './system.js';
-
 export async function saveFile(state, showStatus, saveFileAs) {
     if (!state.currentFileHandle) {
         return saveFileAs(state, showStatus);
@@ -17,7 +11,6 @@ export async function saveFile(state, showStatus, saveFileAs) {
         showStatus("Failed to save: " + err.message, true);
     }
 }
-
 export async function saveFileAs(state, el, showStatus) {
     try {
         const file = await fs.saveFileAs(JSON.stringify(state.projectData, null, 2));
