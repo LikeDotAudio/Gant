@@ -29,13 +29,13 @@ The application is engineered to handle large projects with thousands of tasks w
 - `index.html`: The main application shell and styles.
 - `js/app.js`: Central application logic and state management.
 - `js/renderer.js`: High-performance virtualized rendering logic.
-- `js/gantt.js`: Core WBS and date calculation engine.
+- `js/Rows/index.js`: Core row management engine (facade for `js/Rows/`).
 - `js/worker.js`: Background thread for heavy computations.
 - `js/FoldTree.js`: Logic for hierarchy folding/unfolding.
 - `js/MoveItem.js`: Task reordering and promotion/demotion logic.
-- `js/AddLine.js` & `js/Delete.js`: Centralized task lifecycle management.
+- `js/Rows/add.js` & `js/Rows/deleteTask.js`: Centralized task lifecycle management.
 - `js/milestones.js`: Milestone management and interaction.
-- `js/progressbar.js`: Task bar dragging, resizing, and editing.
+- `js/progressbar/index.js`: Task bar dragging, resizing, and editing.
 
 ## 🚦 Getting Started
 

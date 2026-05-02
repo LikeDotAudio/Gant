@@ -50,6 +50,7 @@
                     <div class="menu-content">
                         <button onclick="window.app.setView('visual')">📊 View as WBS</button>
                         <button onclick="window.app.setView('spreadsheet')">📋 View as Spreadsheet</button>
+                        <button onclick="window.app.setView('printer')">🖨️ Printer Friendly</button>
                         <button onclick="window.app.setView('json')">📄 View as JSON</button>
                     </div>
                 </div>
@@ -59,6 +60,7 @@
             <div class="zoom-controls">
                 <span>Zoom:</span>
                 <button onclick="window.app.zoom(-10)">➖</button>
+                <button onclick="window.app.zoomFit()" title="Zoom to Fit All">ALL</button>
                 <button onclick="window.app.zoom(10)">➕</button>
             </div>
         </div>
@@ -117,6 +119,7 @@
         <div id="editor-container">
             <div id="view-visual" class="view-content active"><div id="gantt-container"><div id="gantt-chart"></div></div></div>
             <div id="view-spreadsheet" class="view-content"></div>
+            <div id="view-printer" class="view-content"></div>
             <div id="view-json" class="view-content"><textarea id="json-editor"></textarea></div>
         </div>
 

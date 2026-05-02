@@ -1,4 +1,4 @@
-import * as gantt from './gantt.js';
+import * as gantt from './Rows/index.js';
 
 self.onmessage = (e) => {
     const { action, payload } = e.data;
