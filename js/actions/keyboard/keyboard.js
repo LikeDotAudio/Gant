@@ -1,12 +1,12 @@
 import { state } from '../../core/state.js';
-import { handleKeyboardF2 } from './keyboardF2.js';
-import { handleKeyboardEdit } from './keyboardEdit.js';
-import { handleKeyboardNavigation } from './keyboardNavigation.js';
-import { handleKeyboardFold } from './keyboardFold.js';
-import { handleKeyboardMove } from './keyboardMove.js';
-import { handleKeyboardCTRLEnter } from './keyboardCTRLEnter.js';
-import { handleKeyboardDel } from './keyboardDel.js';
-import { handleKeyboardCTRLZ } from './keyboardCTRLZ.js';
+import { handleKeyboardF2 } from './f2Keyboard.js';
+import { handleKeyboardEdit } from './editKeyboard.js';
+import { handleKeyboardNavigation } from './navigateKeyboard.js';
+import { handleKeyboardFold } from './foldKeyboard.js';
+import { handleKeyboardMove } from './moveKeyboard.js';
+import { handleKeyboardCTRLEnter } from './ctrlEnterKeyboard.js';
+import { handleKeyboardDel } from './deleteKeyboard.js';
+import { handleKeyboardCTRLZ } from './ctrlZKeyboard.js';
 
 /**
  * Main keyboard entry point.

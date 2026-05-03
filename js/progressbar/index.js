@@ -5,7 +5,7 @@ import { applyResizeRight } from './applyResizeRight.js';
 import { applyResizeLeft } from './applyResizeLeft.js';
 import { handleMove } from './handleMove.js';
 import { applyMove } from './applyMove.js';
-import { editBar } from '../utils/ui/editBar.js';
+import { editBar } from '../utils/ui/barEdit.js';
 import { renderBar } from './render.js';
 export { renderBar, editBar, startBarDrag };
 function startBarDrag(e, fullId, mode, state, render) {

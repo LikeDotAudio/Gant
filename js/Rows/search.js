@@ -1,5 +1,5 @@
 import { getChildren } from './getChildren.js';
-import { getTaskId } from './id-manager.js';
+import { getTaskId } from './managerId.js';
 export function findParentAndIndex(tasks, fullId, parent = null) {
     if (!tasks) return { parent: null, index: -1 };
     for (let i = 0; i < tasks.length; i++) {

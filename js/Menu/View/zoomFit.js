@@ -1,6 +1,6 @@
 import { state } from '../../core/state.js';
 import { render } from '../../core/render.js';
-import { updateNav } from '../../core/worker-client.js';
+import { updateNav } from '../../core/clientWorker.js';
 import { getStickyWidthPx } from '../../utils/layout.js';
 
 export function zoomFit() {

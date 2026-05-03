@@ -1,5 +1,5 @@
 import * as fs from './system.js';
-import { renderJSONView } from '../views/json-view.js';
+import { renderJSONView } from '../views/viewJson.js';
 import { validateProjectData } from './validator.js';
 
 export async function openFile(state, el, render, showStatus) {

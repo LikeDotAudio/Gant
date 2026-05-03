@@ -1,7 +1,7 @@
 import { state } from '../../core/state.js';
 import { el } from '../../core/elements.js';
 import { render } from '../../core/render.js';
-import { showStatus } from '../../StatusBar/Status_update.js';
+import { showStatus } from '../../StatusBar/updateStatus.js';
 import { persistState } from '../../utils/persistence.js';
 import * as gantt from '../../Rows/index.js';
 import { undoManager } from '../../Undo/manager.js';

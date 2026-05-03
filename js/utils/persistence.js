@@ -1,7 +1,7 @@
 import { state } from '../core/state.js';
 import { el } from '../core/elements.js';
-import { showStatus } from '../StatusBar/Status_update.js';
-import { renderJSONView } from '../views/json-view.js';
+import { showStatus } from '../StatusBar/updateStatus.js';
+import { renderJSONView } from '../views/viewJson.js';
 import * as gantt from '../Rows/index.js';
 export function persistState(force = false) {
     state.changeCount++;

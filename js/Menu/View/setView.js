@@ -1,6 +1,6 @@
 import { state } from '../../core/state.js';
 import { render } from '../../core/render.js';
-import { parseJSONView, renderJSONView } from '../../views/json-view.js';
+import { parseJSONView, renderJSONView } from '../../views/viewJson.js';
 import { renderSpreadsheet } from '../../views/spreadsheet.js';
 import { renderPrinterView } from '../../views/printer.js';
 import { renderMindMap } from '../../views/MindMap/index.js';

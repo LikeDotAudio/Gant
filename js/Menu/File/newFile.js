@@ -1,8 +1,8 @@
 import { state } from '../../core/state.js';
 import { el } from '../../core/elements.js';
 import { render } from '../../core/render.js';
-import { showStatus } from '../../StatusBar/Status_update.js';
-import { renderJSONView } from '../../views/json-view.js';
+import { showStatus } from '../../StatusBar/updateStatus.js';
+import { renderJSONView } from '../../views/viewJson.js';
 
 export function newFile() {
     state.currentFileHandle = null;

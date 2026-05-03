@@ -1,6 +1,6 @@
 import { state } from '../core/state.js';
 import { render } from '../core/render.js';
-import { showStatus } from '../StatusBar/Status_update.js';
+import { showStatus } from '../StatusBar/updateStatus.js';
 
 const MAX_UNDO = 5;
 const UNDO_KEY = 'gantt_undo_history';

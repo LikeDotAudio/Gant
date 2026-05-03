@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { el } from './elements.js';
-import { showStatus } from '../StatusBar/Status_update.js';
+import { showStatus } from '../StatusBar/updateStatus.js';
 import * as timeline from '../timeline/index.js'; 
 import { renderSpreadsheet } from '../views/spreadsheet.js';
 import { renderPrinterView } from '../views/printer.js';

@@ -3,7 +3,7 @@ export * from './addBelow.js';
 export * from './confirmDeleteSelected.js';
 export * from './updateTask.js';
 export * from './addMilestone.js';
-export * from './editTask.js';
+export * from './taskEdit.js';
 export * from './rowDragStart.js';
 export * from './rowDragOver.js';
 export * from './rowDragLeave.js';

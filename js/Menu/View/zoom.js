@@ -1,6 +1,6 @@
 import { state } from '../../core/state.js';
 import { render } from '../../core/render.js';
-import { updateNav } from '../../core/worker-client.js';
+import { updateNav } from '../../core/clientWorker.js';
 
 export function zoom(delta) { 
     state.zoomLevel = Math.max(10, Math.min(200, state.zoomLevel + delta)); 

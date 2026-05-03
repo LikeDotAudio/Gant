@@ -1,19 +1,19 @@
 import { el } from './elements.js';
 import { state } from './state.js';
 import { render } from './render.js';
-import { updateNav } from './worker-client.js';
-import { showStatus } from '../StatusBar/Status_update.js';
-import { handleKeyboard } from '../handlers/keyboard/keyboard.js';
-import { handleMouseClick } from '../handlers/mouse/mouseClick.js';
-import { handleMouseChange } from '../handlers/mouse/mouseChange.js';
-import { handleMouseMouseDown } from '../handlers/mouse/mouseMouseDown.js';
-import { handleMouseDblClick } from '../handlers/mouse/mouseDblClick.js';
+import { updateNav } from './clientWorker.js';
+import { showStatus } from '../StatusBar/updateStatus.js';
+import { handleKeyboard } from '../actions/keyboard/keyboard.js';
+import { handleMouseClick } from '../actions/mouse/clickMouse.js';
+import { handleMouseChange } from '../actions/mouse/changeMouse.js';
+import { handleMouseMouseDown } from '../actions/mouse/mouseDownMouse.js';
+import { handleMouseDblClick } from '../actions/mouse/dblClickMouse.js';
 import { 
     handleMouseDragStart, 
     handleMouseDragOver, 
     handleMouseDragLeave, 
     handleMouseDrop 
-} from '../handlers/mouse/mouseDrag.js';
+} from '../actions/mouse/dragMouse.js';
 export function setupEventListeners() {
     window.addEventListener('keydown', handleKeyboard);
     el.overlayCancel.onclick = () => { el.overlay.style.display = 'none'; };

@@ -1,6 +1,6 @@
 import { state } from './core/state.js';
 import { setupEventListeners } from './core/events.js';
-import { initAppAPI } from './core/app-api.js';
+import { initAppAPI } from './core/apiApp.js';
 import { loadFromPath } from './utils/persistence.js';
 import { render } from './core/render.js';
 import { setupMobile } from './Mobile/setup.js';

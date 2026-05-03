@@ -1,4 +1,4 @@
-import { handleNodeDoubleClick } from './EditEvent.js';
+import { handleNodeDoubleClick } from './eventEdit.js';
 import { handleConnect, handleEdgesDelete, handleNodesDelete } from './events.js';
 import { handleMindMapKeyDown } from './keyboard.js';
 
