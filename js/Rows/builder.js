@@ -14,7 +14,7 @@ const RESISTOR_COLORS = [
     "#ffffff"  // 9: White
 ];
 
-export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, result = []) {
+export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, result = [], inheritedColor = null) {
     const { rootId = null, baseDate = null, foldedIds = new Set() } = options;
     const globalBase = (baseDate && typeof baseDate === 'string' && !isNaN(new Date(baseDate).getTime())) 
         ? baseDate 
@@ -40,10 +40,10 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
         const hasChildren = (childrenArr && childrenArr.length > 0);
         const isFolded = safeFoldedIds.has(fullId);
         
-        // Use specified color, or default to resistor code by depth (Root = 1, Parent = 2, etc)
-        // Wraps around every 10 levels using the last digit (modulo)
-        const depthColor = RESISTOR_COLORS[(depth + 1) % 10];
-        const taskColor = t.color || depthColor;
+        // Use specified color, or inheritance, or resistor code by ID value
+        const idVal = parseInt(tid);
+        const resistorColor = !isNaN(idVal) ? RESISTOR_COLORS[idVal % 10] : RESISTOR_COLORS[(depth + 1) % 10];
+        const taskColor = t.color || inheritedColor || resistorColor;
 
         const taskEntry = { 
             name: t.name,
@@ -71,7 +71,7 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
                 rootId: parts[0],
                 baseDate: taskEntry.calculatedStart,
                 foldedIds: safeFoldedIds
-            }, result);
+            }, result, t.color || inheritedColor);
             const children = result.slice(startIdx + 1);
             if (children.length > 0) {
                 const validDates = children

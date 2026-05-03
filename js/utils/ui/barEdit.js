@@ -23,8 +23,8 @@ export function editBar(fullId, projectData, el, render) {
     const startInput = document.getElementById('overlay-start');
     const endInput = document.getElementById('overlay-end');
     if (startInput && endInput && flatTask) {
-        startInput.value = flatTask.calculatedStart;
-        endInput.value = flatTask.calculatedEnd;
+        startInput.value = flatTask.calculatedStart ? flatTask.calculatedStart.split('T')[0] : '';
+        endInput.value = flatTask.calculatedEnd ? flatTask.calculatedEnd.split('T')[0] : '';
     }
 
     const palette = [
