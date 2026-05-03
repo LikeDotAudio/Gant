@@ -1,11 +1,11 @@
 <!--
- * GANTT software is free to use and copy as needed.
+ * Gan't Do it software is free to use and copy as needed.
  * Purpose: Project documentation and overview.
  -->
 
-# Gantt WBS Workspace
+# Gan't Do it
 
-A high-performance, dark-mode Gantt chart and Work Breakdown Structure (WBS) workspace built for speed, scalability, and visual clarity.
+A procrastrination organizer / productivity prioritizer.
 
 ## 🚀 Key Features
 
