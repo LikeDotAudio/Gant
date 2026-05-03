@@ -231,9 +231,18 @@ textarea { flex-grow: 1; width: 100%; font-family: monospace; padding: 15px; bor
     z-index: 20; 
     background: transparent;
 }
-.bar-handle:hover {
-    background: rgba(255, 255, 255, 0.3);
+.bar:hover .bar-handle { background: rgba(255, 255, 255, 0.3); }
+
+/* Dependency Handle Visibility */
+.dependency-handle {
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
+.bar:hover .dependency-handle,
+.dependency-handle.has-dependency {
+    opacity: 1;
+}
+
 .bar-handle-left { left: 0; }
 .bar-handle-right { right: 0; }
 .bar-content { flex-grow: 1; padding: 0 4px; pointer-events: none; overflow: hidden; opacity: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; }
@@ -353,9 +362,9 @@ button:hover { background: #4a5057; }
 .today-line { position: absolute; top: 0; bottom: 0; width: 2px; background: #ff4a4a; z-index: 150; pointer-events: none; }
 .hover-line { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dotted #888; z-index: 151; pointer-events: none; display: none; }
 .milestone-container { position: absolute; top: 0; bottom: 0; width: 0; z-index: 140; pointer-events: none; }
-.milestone-line { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed #ff4a4a; opacity: 0.6; }
-.milestone-diamond { position: absolute; top: 50px; left: -6px; width: 12px; height: 12px; background: #ff4a4a; transform: rotate(45deg); cursor: ew-resize; box-shadow: 0 0 5px rgba(255,74,74,0.5); pointer-events: auto; }
-.milestone-name { position: absolute; top: 48px; left: 12px; font-size: 10px; color: #ff4a4a; white-space: nowrap; background: rgba(26, 28, 30, 0.8); padding: 2px 4px; border-radius: 2px; pointer-events: auto; cursor: default; }
+.milestone-line { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px solid #ff4a4a; opacity: 0.8; }
+.milestone-diamond { position: absolute; left: -6px; width: 12px; height: 12px; background: #ff4a4a; transform: rotate(45deg); cursor: ew-resize; box-shadow: 0 0 8px rgba(255,74,74,0.7); pointer-events: auto; z-index: 10; border: 1px solid white; }
+.milestone-name { position: absolute; top: 120px; left: 12px; font-size: 11px; font-weight: bold; color: #ff4a4a; white-space: nowrap; background: rgba(26, 28, 30, 0.9); padding: 2px 6px; border-radius: 4px; pointer-events: auto; cursor: default; border: 1px solid #ff4a4a; }
 
 .col-toggles { 
     padding: 5px 20px; 

@@ -1,3 +1,8 @@
+/**
+ * js/actions/keyboard/foldKeyboard.js
+ * Handles horizontal arrow key interactions for folding/unfolding and navigating hierarchy.
+ */
+
 import { state } from '../../core/state.js';
 import { render } from '../../core/render.js';
 import * as gantt from '../../Rows/index.js';
@@ -5,47 +10,56 @@ import { undoManager } from '../../Undo/manager.js';
 
 /**
  * Smart folding for keyboard navigation.
- * ArrowLeft: Fold selected item. If already folded or no children, select parent.
- * ArrowRight: Unfold selected item.
+ * ArrowLeft: Folds the selected item. If already folded or no children, selects the parent.
+ * ArrowRight: Unfolds the selected item.
  * 
- * @param {Event} e - The keyboard event.
- * @param {Array} roots 
- * @param {Set} foldedIds 
- * @param {string} selectedId 
- * @returns {boolean} - Whether the event was handled.
+ * @param {KeyboardEvent} keyboardEvent - The browser's native keyboard event.
+ * @param {Array<Object>} projectRoots - The hierarchical project structure.
+ * @param {Set<string>} foldedIdsSet - The set of IDs currently in a folded state.
+ * @param {string} currentlySelectedTaskId - The full ID of the task receiving the command.
+ * @returns {boolean} - Returns true if the folding/unfolding action was handled.
  */
-export function handleKeyboardFold(e, roots, foldedIds, selectedId) {
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return false;
+export function foldKeyboard(keyboardEvent, projectRoots, foldedIdsSet, currentlySelectedTaskId) {
+    const isArrowLeft = keyboardEvent.key === 'ArrowLeft';
+    const isArrowRight = keyboardEvent.key === 'ArrowRight';
+
+    if (!isArrowLeft && !isArrowRight) {
+        return false;
+    }
     
     // Prevent browser horizontal scrolling when a task is selected
-    e.preventDefault();
+    keyboardEvent.preventDefault();
 
-    const direction = e.key === 'ArrowLeft' ? 'left' : 'right';
-    const task = gantt.findTask(roots, selectedId);
-    if (!task) return true;
+    const targetTask = gantt.findTask(projectRoots, currentlySelectedTaskId);
+    if (!targetTask) {
+        return true;
+    }
     
     undoManager.pushState();
 
-    const hasChildren = gantt.getChildren(task)?.length > 0;
+    const childrenList = gantt.getChildren(targetTask);
+    const hasChildrenToFold = childrenList && childrenList.length > 0;
     
-    if (direction === 'left') {
-        if (hasChildren && !foldedIds.has(selectedId)) {
-            foldedIds.add(selectedId);
+    if (isArrowLeft) {
+        if (hasChildrenToFold && !foldedIdsSet.has(currentlySelectedTaskId)) {
+            // Fold the current item
+            foldedIdsSet.add(currentlySelectedTaskId);
             render();
             return true;
         } else {
-            // Select parent
-            const parentId = gantt.getFullIdOfParent(roots, selectedId);
-            if (parentId) {
+            // Already folded or no children: navigate to the parent
+            const parentFullId = gantt.getFullIdOfParent(projectRoots, currentlySelectedTaskId);
+            if (parentFullId) {
                 state.selectedTaskFullIds.clear();
-                state.selectedTaskFullIds.add(parentId);
+                state.selectedTaskFullIds.add(parentFullId);
                 render(false);
             }
             return true;
         }
-    } else if (direction === 'right') {
-        if (hasChildren && foldedIds.has(selectedId)) {
-            foldedIds.delete(selectedId);
+    } else if (isArrowRight) {
+        if (hasChildrenToFold && foldedIdsSet.has(currentlySelectedTaskId)) {
+            // Unfold the current item
+            foldedIdsSet.delete(currentlySelectedTaskId);
             render();
             return true;
         }

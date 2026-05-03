@@ -26,13 +26,13 @@ export function initNavigator(containerEl, ganttChartEl) {
     const viewport = document.getElementById('nav-viewport');
     const resizeHandle = document.getElementById('nav-resize-handle');
     
-    const update = (flatTasks, minStr, maxStr, zoomLevel) => {
+    const update = (flatTasks, minStr, maxStr, zoomLevel, milestones) => {
         // Sync canvas size with container size if it changed
         if (canvas.width !== navContainer.clientWidth || canvas.height !== navContainer.clientHeight) {
             canvas.width = navContainer.clientWidth;
             canvas.height = navContainer.clientHeight;
         }
-        renderNav(canvas, viewport, containerEl, ganttChartEl, flatTasks, minStr, maxStr, zoomLevel);
+        renderNav(canvas, viewport, containerEl, ganttChartEl, flatTasks, minStr, maxStr, zoomLevel, milestones);
     };
 
     // Resize logic

@@ -4,15 +4,15 @@ import { render } from './render.js';
 import { updateNav } from './clientWorker.js';
 import { showStatus } from '../StatusBar/updateStatus.js';
 import { handleKeyboard } from '../actions/keyboard/keyboard.js';
-import { handleMouseClick } from '../actions/mouse/clickMouse.js';
-import { handleMouseChange } from '../actions/mouse/changeMouse.js';
-import { handleMouseMouseDown } from '../actions/mouse/mouseDownMouse.js';
-import { handleMouseDblClick } from '../actions/mouse/dblClickMouse.js';
+import { clickMouse } from '../actions/mouse/clickMouse.js';
+import { changeMouse } from '../actions/mouse/changeMouse.js';
+import { mouseDownMouse } from '../actions/mouse/mouseDownMouse.js';
+import { dblClickMouse } from '../actions/mouse/dblClickMouse.js';
 import { 
-    handleMouseDragStart, 
-    handleMouseDragOver, 
-    handleMouseDragLeave, 
-    handleMouseDrop 
+    dragStartMouse, 
+    dragOverMouse, 
+    dragLeaveMouse, 
+    dropMouse 
 } from '../actions/mouse/dragMouse.js';
 export function setupEventListeners() {
     window.addEventListener('keydown', handleKeyboard);
@@ -33,7 +33,7 @@ export function setupEventListeners() {
                     if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
                     scrollTimeout = requestAnimationFrame(() => {
                         render(false);
-                        if (updateNav) updateNav(state.flatTasks, state.projectMin, state.projectMax, state.zoomLevel);
+                        if (updateNav) updateNav(state.flatTasks, state.projectMin, state.projectMax, state.zoomLevel, state.projectData.milestones);
                     });
                 }
             }, { passive: true });
@@ -59,17 +59,17 @@ export function setupEventListeners() {
                 if (isPanning) {
                     container.scrollLeft = startScrollLeft - (e.clientX - startX);
                     container.scrollTop = startScrollTop - (e.clientY - startY);
-                    if (updateNav) updateNav(state.flatTasks, state.projectMin, state.projectMax, state.zoomLevel);
+                    if (updateNav) updateNav(state.flatTasks, state.projectMin, state.projectMax, state.zoomLevel, state.projectData.milestones);
                 }
             });
             window.addEventListener('mouseup', (e) => {
                 if (e.button === 1) { isPanning = false; container.style.cursor = 'auto'; }
             });
         }
-        el.ganttChart.addEventListener('click', handleMouseClick);
-        el.ganttChart.addEventListener('change', handleMouseChange);
-        el.ganttChart.addEventListener('mousedown', handleMouseMouseDown);
-        el.ganttChart.addEventListener('dblclick', handleMouseDblClick);
+        el.ganttChart.addEventListener('click', clickMouse);
+        el.ganttChart.addEventListener('change', changeMouse);
+        el.ganttChart.addEventListener('mousedown', mouseDownMouse);
+        el.ganttChart.addEventListener('dblclick', dblClickMouse);
         el.ganttChart.addEventListener('mousemove', (e) => {
             const isTimeline = e.target.closest('.gantt-timeline') || e.target.closest('.task-bars-cell');
             const hoverLine = el.ganttChart.querySelector('.hover-line');
@@ -79,10 +79,10 @@ export function setupEventListeners() {
                 hoverLine.style.display = 'block';
             } else if (hoverLine) { hoverLine.style.display = 'none'; }
         });
-        el.ganttChart.addEventListener('dragstart', handleMouseDragStart);
-        el.ganttChart.addEventListener('dragover', handleMouseDragOver);
-        el.ganttChart.addEventListener('dragleave', handleMouseDragLeave);
-        el.ganttChart.addEventListener('drop', handleMouseDrop);
+        el.ganttChart.addEventListener('dragstart', dragStartMouse);
+        el.ganttChart.addEventListener('dragover', dragOverMouse);
+        el.ganttChart.addEventListener('dragleave', dragLeaveMouse);
+        el.ganttChart.addEventListener('drop', dropMouse);
         el.ganttChart.addEventListener('mouseover', (e) => {
             const bar = e.target.closest('.bar');
             if (bar) { const row = bar.closest('.gantt-row'); if (row) row.draggable = false; }

@@ -1,100 +1,140 @@
+/**
+ * js/Rows/flattenTasks.js
+ * Logic for converting the hierarchical project tree into a flat array for rendering and search.
+ * Calculates cascading dates, durations, and inherited styles recursively.
+ */
+
 import { getChildren } from './getChildren.js';
-import { getTaskId } from './managerId.js';
+import { getTaskId } from './getTaskId.js';
 import { resolveTaskColor } from './colorResolver.js';
+import { TIME } from '../core/constants.js';
 
 /**
  * Flattens the hierarchical project tree into a linear list for rendering.
- * Calculates dates, durations, and inherited styles recursively.
+ * 
+ * @param {Array<Object>} taskHierarchy - The nested list of tasks.
+ * @param {number} currentDepth - Nesting level (0=Root).
+ * @param {string} parentFullId - The dot-notated ID of the parent task.
+ * @param {Object} options - Flattening options (baseDate, foldedIds).
+ * @param {Array<Object>} flatResultList - Accumulator for the flattened tasks.
+ * @param {string|null} inheritedColorHex - Color hex inherited from a parent.
+ * @returns {Array<Object>} The final flat list of tasks.
  */
-export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, result = [], inheritedColor = null) {
+export function flattenTasks(
+    taskHierarchy, 
+    currentDepth = 0, 
+    parentFullId = "", 
+    options = {}, 
+    flatResultList = [], 
+    inheritedColorHex = null
+) {
     const { baseDate = null, foldedIds = new Set() } = options;
-    const globalBase = (baseDate && typeof baseDate === 'string' && !isNaN(new Date(baseDate).getTime())) 
+    
+    // Determine the starting anchor date for this level's waterfall
+    const globalBaseDateStr = (baseDate && typeof baseDate === 'string' && !isNaN(new Date(baseDate).getTime())) 
         ? baseDate 
         : new Date().toISOString().split('T')[0];
     
-    let runner;
+    let waterfallCursorDate;
     try {
-        runner = new Date(globalBase.includes('T') ? globalBase : globalBase + 'T00:00:00');
-        if (isNaN(runner.getTime())) runner = new Date();
-    } catch (e) {
-        runner = new Date();
+        waterfallCursorDate = new Date(globalBaseDateStr.includes('T') ? globalBaseDateStr : globalBaseDateStr + 'T00:00:00');
+        if (isNaN(waterfallCursorDate.getTime())) waterfallCursorDate = new Date();
+    } catch (error) {
+        waterfallCursorDate = new Date();
     }
 
-    if (!tasks) return result;
+    if (!taskHierarchy) return flatResultList;
     const safeFoldedIds = (foldedIds instanceof Set) ? foldedIds : new Set();
 
-    tasks.forEach((t) => {
-        const tid = getTaskId(t);
-        const fullId = (parentId ? `${parentId}.${tid}` : tid) || "0";
-        const parts = fullId.split('.');
+    taskHierarchy.forEach((task) => {
+        const localTaskId = getTaskId(task);
+        const fullTaskId = (parentFullId ? `${parentFullId}.${localTaskId}` : localTaskId) || "0";
+        const idParts = fullTaskId.split('.');
         
-        if (t.start) {
-            const parsedStart = new Date(t.start.includes('T') ? t.start : t.start + 'T00:00:00');
-            if (!isNaN(parsedStart.getTime())) runner = parsedStart;
+        // If task has an explicit start date, it resets the waterfall cursor for its own branch
+        if (task.start) {
+            const explicitStartTime = new Date(task.start.includes('T') ? task.start : task.start + 'T00:00:00');
+            if (!isNaN(explicitStartTime.getTime())) waterfallCursorDate = explicitStartTime;
         }
 
-        const childrenArr = getChildren(t);
-        const hasChildren = (childrenArr && childrenArr.length > 0);
-        const isFolded = safeFoldedIds.has(fullId);
+        const taskChildren = getChildren(task);
+        const hasChildren = (taskChildren && taskChildren.length > 0);
+        const isTaskFolded = safeFoldedIds.has(fullTaskId);
         
-        const taskColor = resolveTaskColor(t, depth, tid, inheritedColor);
+        const resolvedTaskColor = resolveTaskColor(task, currentDepth, localTaskId, inheritedColorHex);
 
-        const taskEntry = { 
-            name: t.name,
-            progress: t.progress,
-            color: t.color,
-            resolvedColor: taskColor,
-            dependency: t.dependency,
-            start: t.start,
-            duration: t.duration,
-            type: t.type,
+        // Prepare the flat entry
+        const flattenedTaskEntry = { 
+            name: task.name,
+            progress: task.progress,
+            color: task.color,
+            resolvedColor: resolvedTaskColor,
+            dependency: task.dependency,
+            start: task.start,
+            duration: task.duration,
+            type: task.type,
             hasChildren,
-            depth, 
-            fullId, 
-            wbs_root: parts[0] || '-',
-            wbs_parent: parts.length > 1 ? parts[1] : '-',
-            wbs_child: parts.length > 2 ? parts[2] : '-',
-            wbs_sibling: parts.length > 3 ? parts[3] : '-',
-            isFolded,
-            calculatedStart: runner.toISOString()
+            depth: currentDepth, 
+            fullId: fullTaskId, 
+            // WBS breakdown for spreadsheet/sorting
+            wbs_root: idParts[0] || '-',
+            wbs_parent: idParts.length > 1 ? idParts[1] : '-',
+            wbs_child: idParts.length > 2 ? idParts[2] : '-',
+            wbs_sibling: idParts.length > 3 ? idParts[3] : '-',
+            isFolded: isTaskFolded,
+            calculatedStart: waterfallCursorDate.toISOString()
         };
 
-        if (hasChildren && !isFolded) {
-            const startIdx = result.length;
-            result.push(taskEntry); 
+        if (hasChildren && !isTaskFolded) {
+            const startIdxInResult = flatResultList.length;
+            flatResultList.push(flattenedTaskEntry); 
             
-            flattenTasks(childrenArr, depth + 1, fullId, {
-                baseDate: taskEntry.calculatedStart,
-                foldedIds: safeFoldedIds
-            }, result, t.color || inheritedColor);
+            // Recurse into children
+            flattenTasks(
+                taskChildren, 
+                currentDepth + 1, 
+                fullTaskId, 
+                {
+                    baseDate: flattenedTaskEntry.calculatedStart,
+                    foldedIds: safeFoldedIds
+                }, 
+                flatResultList, 
+                task.color || inheritedColorHex
+            );
             
-            const children = result.slice(startIdx + 1);
-            if (children.length > 0) {
-                const validDates = children
-                    .map(c => [new Date(c.calculatedStart), new Date(c.calculatedEnd)])
+            // Summary tasks (parents) take the bounds of their children
+            const flattenedChildren = flatResultList.slice(startIdxInResult + 1);
+            if (flattenedChildren.length > 0) {
+                const childDates = flattenedChildren
+                    .map(child => [new Date(child.calculatedStart), new Date(child.calculatedEnd)])
                     .flat()
-                    .filter(d => !isNaN(d.getTime()));
-                if (validDates.length > 0) {
-                    const minChild = new Date(Math.min(...validDates));
-                    const maxChild = new Date(Math.max(...validDates));
-                    taskEntry.calculatedStart = minChild.toISOString();
-                    taskEntry.calculatedEnd = maxChild.toISOString();
-                    taskEntry.duration = (maxChild - minChild) / 86400000;
+                    .filter(date => !isNaN(date.getTime()));
+                
+                if (childDates.length > 0) {
+                    const minChildDate = new Date(Math.min(...childDates));
+                    const maxChildDate = new Date(Math.max(...childDates));
+                    flattenedTaskEntry.calculatedStart = minChildDate.toISOString();
+                    flattenedTaskEntry.calculatedEnd = maxChildDate.toISOString();
+                    flattenedTaskEntry.duration = (maxChildDate - minChildDate) / TIME.MILLISECONDS_PER_DAY;
                 }
             }
         } else {
-            const d = (t.duration !== undefined) ? t.duration : 1;
-            const start = new Date(runner); 
-            const endObj = new Date(start.getTime() + (d * 86400000)); 
-            taskEntry.calculatedEnd = endObj.toISOString();
-            taskEntry.duration = d;
-            result.push(taskEntry);
+            // Leaf task or folded parent: use its own duration
+            const taskDurationDays = (task.duration !== undefined) ? task.duration : 1;
+            const calculatedEndDate = new Date(waterfallCursorDate.getTime() + (taskDurationDays * TIME.MILLISECONDS_PER_DAY)); 
+            
+            flattenedTaskEntry.calculatedEnd = calculatedEndDate.toISOString();
+            flattenedTaskEntry.duration = taskDurationDays;
+            flatResultList.push(flattenedTaskEntry);
         }
 
-        const ownDuration = (t.duration !== undefined) ? t.duration : 1;
-        const waterfallEnd = new Date(new Date(taskEntry.calculatedStart).getTime() + (ownDuration * 86400000));
-        if (!isNaN(waterfallEnd.getTime())) runner = waterfallEnd;
+        // Advance the waterfall cursor for the NEXT sibling at this level
+        const currentTaskDuration = (task.duration !== undefined) ? task.duration : 1;
+        const nextWaterfallStart = new Date(new Date(flattenedTaskEntry.calculatedStart).getTime() + (currentTaskDuration * TIME.MILLISECONDS_PER_DAY));
+        if (!isNaN(nextWaterfallStart.getTime())) {
+            waterfallCursorDate = nextWaterfallStart;
+        }
     });
 
-    return result;
+    return flatResultList;
 }

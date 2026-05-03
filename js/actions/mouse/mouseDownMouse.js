@@ -1,3 +1,8 @@
+/**
+ * js/actions/mouse/mouseDownMouse.js
+ * Handles mouse-down events on the Gantt chart, routing them to specific interaction handlers.
+ */
+
 import { state } from '../../core/state.js';
 import { render } from '../../core/render.js';
 
@@ -5,28 +10,33 @@ import { render } from '../../core/render.js';
  * Event handler for mouse-down events on the Gantt chart.
  * Routes interactions to column resizing, bar dragging, or milestone dragging.
  * 
- * @param {Event} e - The DOM mouse-down event.
+ * @param {MouseEvent} event - The DOM mouse-down event.
  */
-export function handleMouseMouseDown(e) {
-    const target = e.target;
+export function mouseDownMouse(event) {
+    const targetElement = event.target;
 
-    if (target.classList.contains('col-resizer')) {
-        window.app.startColResize(e, target.dataset.col);
+    if (targetElement.classList.contains('col-resizer')) {
+        const columnId = targetElement.dataset.col;
+        window.app.startColResize(event, columnId);
         return;
     }
 
-    const actionEl = target.dataset.action ? target : target.closest('[data-action]');
-    const action = actionEl?.dataset.action;
-    const id = actionEl?.dataset.id || target.closest('[data-id]')?.dataset.id;
+    const actionElement = targetElement.dataset.action ? targetElement : targetElement.closest('[data-action]');
+    const action = actionElement?.dataset.action;
+    const fullId = actionElement?.dataset.id || targetElement.closest('[data-id]')?.dataset.id;
 
     if (action === 'barInteract' || action === 'resize-left' || action === 'resize-right') {
         const mode = action === 'barInteract' ? 'move' : action;
-        if (id) {
-            state.selectedTaskFullId = id;
-            render();
+        if (fullId) {
+            state.selectedTaskFullIds.clear();
+            state.selectedTaskFullIds.add(fullId);
+            render(false);
         }
-        window.app.startBarDrag(e, id, mode);
+        window.app.startBarDrag(event, fullId, mode);
+    } else if (action === 'dependency-start') {
+        window.app.startDependencyDrag(event, fullId);
     } else if (action === 'milestoneDrag') {
-        window.app.startMilestoneDrag(e, parseInt(actionEl.dataset.index));
+        const milestoneIndex = parseInt(actionElement.dataset.index);
+        window.app.startMilestoneDrag(event, milestoneIndex);
     }
 }

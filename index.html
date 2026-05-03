@@ -57,6 +57,7 @@
                         <button onclick="window.app.saveFileAs()">💾 Save As...</button>
                         <hr style="border:none; border-top:1px solid #444; margin:5px 0;">
                         <button onclick="window.app.importCSV()">📥 Import from CSV</button>
+                        <button onclick="window.app.importBlob()">📋 Import BLOB</button>
                         <button onclick="window.app.exportCSV()">📤 Export to CSV</button>
                     </div>
                 </div>
@@ -98,7 +99,7 @@
                 </div>
             </div>
             <h2 id="active-filename">Gan't Do It!</h2>
-            <div id="version-display" style="font-size: 10px; color: #666;">Version: 20260503.1301</div>
+            <div id="version-display" style="font-size: 10px; color: #666;">Version: 20260503.1435</div>
 
             <div class="zoom-controls">
                 <span>Zoom:</span>
@@ -184,6 +185,7 @@
                 </div>
                 <div style="display:flex; gap:10px;">
                     <label style="flex:1">ID: <input type="text" id="overlay-id" style="width:100%"></label>
+                    <label style="flex:1">Dependency: <input type="text" id="overlay-dep" style="width:100%"></label>
                 </div>
                 <div id="progress-container" style="display:flex; align-items:center; gap:10px;">
                     Progress: <input type="range" id="overlay-progress" min="0" max="100" style="flex-grow:1; cursor:pointer"> <span id="progress-val">0%</span>

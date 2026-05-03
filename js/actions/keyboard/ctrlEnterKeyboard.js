@@ -1,16 +1,23 @@
+/**
+ * js/actions/keyboard/ctrlEnterKeyboard.js
+ * Handles the Ctrl+Enter keyboard shortcut for adding a new task below the current selection.
+ */
+
 import { state } from '../../core/state.js';
 
 /**
- * Handles Ctrl+Enter to add a new task below the selection.
+ * Handles Ctrl+Enter (or Cmd+Enter) to add a new task below the selection.
  * 
- * @param {Event} e - The keyboard event.
- * @returns {boolean} - Whether the event was handled.
+ * @param {KeyboardEvent} event - The native keyboard event.
+ * @returns {boolean} - Returns true if the event was handled, false otherwise.
  */
-export function handleKeyboardCTRLEnter(e) {
-    if (e.key !== 'Enter' || !(e.ctrlKey || e.metaKey)) return false;
+export function ctrlEnterKeyboard(event) {
+    if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) {
+        return false;
+    }
 
     if (state.selectedTaskFullIds.size > 0) {
-        e.preventDefault();
+        event.preventDefault();
         if (window.app && typeof window.app.addBelow === 'function') {
             window.app.addBelow();
         }

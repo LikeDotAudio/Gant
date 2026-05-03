@@ -1,3 +1,8 @@
+/**
+ * js/actions/keyboard/deleteKeyboard.js
+ * Handles the keyboard shortcut for deleting selected tasks.
+ */
+
 import { state } from '../../core/state.js';
 import { render } from '../../core/render.js';
 import { showStatus } from '../../StatusBar/updateStatus.js';
@@ -6,37 +11,44 @@ import { undoManager } from '../../Undo/manager.js';
 import * as gantt from '../../Rows/index.js';
 
 /**
- * Handles the Delete key to perform immediate task deletion.
+ * Monitors for the 'Delete' key to remove currently selected tasks from the project.
  * 
- * @param {Event} e - The keyboard event.
- * @returns {boolean} - Whether the event was handled.
+ * @param {KeyboardEvent} keyboardEvent - The browser's native keyboard event.
+ * @returns {boolean} - Returns true if the delete action was handled.
  */
-export function handleKeyboardDel(e) {
-    if (e.key !== 'Delete') return false;
+export function deleteKeyboard(keyboardEvent) {
+    if (keyboardEvent.key !== 'Delete') {
+        return false;
+    }
 
     if (state.selectedTaskFullIds.size > 0) {
-        e.preventDefault();
+        keyboardEvent.preventDefault();
         
         undoManager.pushState();
         
-        const fullIds = Array.from(state.selectedTaskFullIds);
-        let deletedCount = 0;
-        let lastDeletedName = "";
+        const selectedFullIds = Array.from(state.selectedTaskFullIds);
+        let successfullyDeletedCount = 0;
+        let mostRecentDeletedTaskName = "";
 
-        // Delete all selected tasks
-        fullIds.forEach(id => {
-            const result = gantt.del.deleteTask(state.projectData.roots, id);
-            if (result.changed) {
-                deletedCount++;
-                lastDeletedName = result.name;
+        // Iterate through all selected tasks and attempt deletion
+        selectedFullIds.forEach(targetFullId => {
+            const deletionResult = gantt.del.deleteTask(state.projectData.roots, targetFullId);
+            if (deletionResult.changed) {
+                successfullyDeletedCount++;
+                mostRecentDeletedTaskName = deletionResult.name;
             }
         });
 
-        if (deletedCount > 0) {
+        if (successfullyDeletedCount > 0) {
             state.selectedTaskFullIds.clear();
             gantt.refreshIds(state.projectData.roots);
             render(true);
-            showStatus(deletedCount === 1 ? `Deleted ${lastDeletedName}` : `Deleted ${deletedCount} tasks`);
+            
+            const statusMessage = successfullyDeletedCount === 1 
+                ? `Deleted ${mostRecentDeletedTaskName}` 
+                : `Deleted ${successfullyDeletedCount} tasks`;
+            
+            showStatus(statusMessage);
             persistState(true);
         }
         

@@ -12,6 +12,7 @@ export const el = {
     overlayInput: document.getElementById('overlay-input'),
     overlayProgress: document.getElementById('overlay-progress'),
     overlayId: document.getElementById('overlay-id'),
+    overlayDep: document.getElementById('overlay-dep'),
     overlayColor: document.getElementById('overlay-color'),    overlayTitle: document.getElementById('overlay-title'), 
     overlayOk: document.getElementById('overlay-ok'),
     overlayCancel: document.getElementById('overlay-cancel'),

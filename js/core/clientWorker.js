@@ -32,7 +32,7 @@ worker.onmessage = (e) => {
             const container = document.getElementById('gantt-container');
             updateNav = timeline.initNavigator(container, el.ganttChart);
         }
-        if (updateNav) updateNav(state.flatTasks, state.projectMin, state.projectMax, state.zoomLevel);
+        if (updateNav) updateNav(state.flatTasks, state.projectMin, state.projectMax, state.zoomLevel, state.projectData.milestones);
     } else if (action === 'refreshed') {
         state.projectData.roots = result;
         render(true);

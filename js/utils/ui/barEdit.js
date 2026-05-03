@@ -17,6 +17,11 @@ export function editBar(fullId, projectData, el, render) {
     
     // Set the task ID field
     el.overlayId.value = gantt.getTaskId(task);
+    
+    // Set the dependency field
+    if (el.overlayDep) {
+        el.overlayDep.value = task.dependency || '';
+    }
 
     document.getElementById('progress-val').innerText = `${task.progress || 0}%`;
 
@@ -28,16 +33,26 @@ export function editBar(fullId, projectData, el, render) {
     }
 
     const palette = [
-        '#000000', '#5d4037', '#ff0000', '#ff9800', '#ffff00', 
+        'none', '#000000', '#5d4037', '#ff0000', '#ff9800', '#ffff00', 
         '#00ff00', '#2196f3', '#9c27b0', '#9e9e9e', '#ffffff'
     ];
     const grid = document.getElementById('palette-grid');
     grid.innerHTML = '';
-    let selectedColor = task.color || "#f4902c";
+    let selectedColor = task.color || "none";
     palette.forEach(c => {
         const div = document.createElement('div');
         div.className = 'palette-color';
-        div.style.backgroundColor = c;
+        if (c === 'none') {
+            div.classList.add('res-none');
+            div.title = "No Color";
+            div.style.display = 'flex';
+            div.style.alignItems = 'center';
+            div.style.justifyContent = 'center';
+            div.innerHTML = '<span style="color: #888; transform: rotate(45deg); font-weight: bold;">|</span>';
+        } else {
+            div.style.backgroundColor = c;
+        }
+        
         if (c.toLowerCase() === selectedColor.toLowerCase()) div.classList.add('active');
         div.onclick = () => {
             selectedColor = c;
@@ -71,6 +86,11 @@ export function editBar(fullId, projectData, el, render) {
         // Update task ID based on the task depth
         const depth = flatTask ? flatTask.depth : 0;
         gantt.setTaskId(task, el.overlayId.value, depth);
+
+        // Update dependency
+        if (el.overlayDep) {
+            task.dependency = el.overlayDep.value;
+        }
 
         if (startInput && endInput) {
             task.start = startInput.value;

@@ -5,3 +5,4 @@ export * from './saveFileAs.js';
 export * from './importCSV.js';
 export * from './exportCSV.js';
 export * from './loadFromPath.js';
+export * from './importBlob.js';

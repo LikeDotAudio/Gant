@@ -1,41 +1,67 @@
+/**
+ * js/actions/keyboard/keyboard.js
+ * Main entry point for keyboard event handling in the Gantt application.
+ * Delegates events to specialized handlers.
+ */
+
 import { state } from '../../core/state.js';
-import { handleKeyboardF2 } from './f2Keyboard.js';
-import { handleKeyboardEdit } from './editKeyboard.js';
-import { handleKeyboardNavigation } from './navigateKeyboard.js';
-import { handleKeyboardFold } from './foldKeyboard.js';
-import { handleKeyboardMove } from './moveKeyboard.js';
-import { handleKeyboardCTRLEnter } from './ctrlEnterKeyboard.js';
-import { handleKeyboardDel } from './deleteKeyboard.js';
-import { handleKeyboardCTRLZ } from './ctrlZKeyboard.js';
+import { f2Keyboard } from './f2Keyboard.js';
+import { editKeyboard } from './editKeyboard.js';
+import { navigateKeyboard } from './navigateKeyboard.js';
+import { foldKeyboard } from './foldKeyboard.js';
+import { moveKeyboard } from './moveKeyboard.js';
+import { ctrlEnterKeyboard } from './ctrlEnterKeyboard.js';
+import { deleteKeyboard } from './deleteKeyboard.js';
+import { ctrlZKeyboard } from './ctrlZKeyboard.js';
 
 /**
- * Main keyboard entry point.
- * Delegates to specialized handlers based on command type.
+ * Main keyboard event handler.
+ * Delegates to specialized handlers based on the keyboard event properties.
  * 
- * @param {Event} e - The keyboard event.
+ * @param {KeyboardEvent} event - The native keyboard event.
  */
-export function handleKeyboard(e) {
-    console.log(`[handleKeyboard] Event triggered`, { type: e.type, key: e.key, ctrl: e.ctrlKey });
+export function handleKeyboard(event) {
+    console.log(`[handleKeyboard] Event triggered`, { type: event.type, key: event.key, ctrl: event.ctrlKey });
     
     // Global bypass for inputs and non-visual views
-    if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
-    if (state.currentView !== 'visual') return;
+    const activeElement = document.activeElement;
+    if (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT') {
+        return;
+    }
+    
+    if (state.currentView !== 'visual') {
+        return;
+    }
 
     // Handle modified commands (Ctrl/Cmd)
-    if (e.ctrlKey || e.metaKey) {
-        if (handleKeyboardCTRLZ(e)) return;
-        if (handleKeyboardCTRLEnter(e)) return;
-        if (handleKeyboardMove(e)) return;
+    if (event.ctrlKey || event.metaKey) {
+        if (ctrlZKeyboard(event)) {
+            return;
+        }
+        if (ctrlEnterKeyboard(event)) {
+            return;
+        }
+        if (moveKeyboard(event)) {
+            return;
+        }
     }
 
     // Handle standard commands
-    if (handleKeyboardDel(e)) return;
-    if (handleKeyboardF2(e)) return;
-    if (handleKeyboardEdit(e)) return;
-    if (handleKeyboardNavigation(e)) return;
+    if (deleteKeyboard(event)) {
+        return;
+    }
+    if (f2Keyboard(event)) {
+        return;
+    }
+    if (editKeyboard(event)) {
+        return;
+    }
+    if (navigateKeyboard(event)) {
+        return;
+    }
     
-    const selectedId = Array.from(state.selectedTaskFullIds)[0];
-    if (selectedId) {
-        handleKeyboardFold(e, state.projectData.roots, state.foldedIds, selectedId);
+    const selectedFullId = Array.from(state.selectedTaskFullIds)[0];
+    if (selectedFullId) {
+        foldKeyboard(event, state.projectData.roots, state.foldedIds, selectedFullId);
     }
 }

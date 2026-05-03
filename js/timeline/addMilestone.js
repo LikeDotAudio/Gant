@@ -21,12 +21,21 @@ export function addMilestone(e, minDateStr, projectData, zoomLevel, el, render) 
     if (isNaN(mDate.getTime())) return;
     
     el.overlay.style.display = 'flex';
-    el.overlayTitle.innerText = "Milestone Name";
+    el.overlayTitle.innerText = "Add Milestone";
     const overlayFields = el.overlay.querySelector('#overlay-fields');
     if (overlayFields) {
         Array.from(overlayFields.children).forEach(child => {
             if (child.innerText.includes('Name:')) {
                 child.style.display = 'flex';
+            } else if (child.innerHTML.includes('overlay-start')) {
+                child.style.display = 'flex';
+                const startInput = document.getElementById('overlay-start');
+                if (startInput) {
+                    startInput.value = mDate.toISOString().split('T')[0];
+                    startInput.parentElement.firstChild.textContent = "Date: ";
+                }
+                const stopLabel = document.getElementById('overlay-end')?.parentElement;
+                if (stopLabel) stopLabel.style.display = 'none';
             } else {
                 child.style.display = 'none';
             }
@@ -38,10 +47,13 @@ export function addMilestone(e, minDateStr, projectData, zoomLevel, el, render) 
     el.overlayInput.select();
     
     el.overlayOk.onclick = () => {
+        const startInput = document.getElementById('overlay-start');
+        const finalDate = startInput ? startInput.value : mDate.toISOString().split('T')[0];
+        
         if (el.overlayInput.value) {
             if (!projectData.milestones) projectData.milestones = [];
             projectData.milestones.push({
-                date: mDate.toISOString().split('T')[0],
+                date: finalDate,
                 name: el.overlayInput.value
             });
             render();
@@ -63,5 +75,11 @@ function resetOverlay(el) {
     const overlayFields = el.overlay.querySelector('#overlay-fields');
     if (overlayFields) {
         Array.from(overlayFields.children).forEach(child => child.style.display = '');
+        const startInput = document.getElementById('overlay-start');
+        if (startInput) {
+            startInput.parentElement.firstChild.textContent = "Start: ";
+        }
+        const stopLabel = document.getElementById('overlay-end')?.parentElement;
+        if (stopLabel) stopLabel.style.display = 'flex';
     }
 }
