@@ -1,116 +1,160 @@
-import * as gantt from '../../Rows/index.js';
+/**
+ * js/utils/ui/barEdit.js
+ * Manages the task editor overlay, allowing users to modify task names, progress, IDs, and colors.
+ */
 
-export function editBar(fullId, projectData, el, render) {
-    const task = gantt.findTask(projectData.roots, fullId);
-    if (!task) return;
+import * as ganttOperations from '../../Rows/index.js';
 
-    // Find the flat task to get calculated dates
-    const { flat } = gantt.getFlattenedProject(projectData.roots, { baseDate: projectData.baseDate });
-    const flatTask = flat.find(t => t.fullId === fullId);
+/**
+ * Opens and populates the task edit overlay.
+ * 
+ * @param {string} taskFullId - The dot-notated full ID of the task to edit.
+ * @param {Object} projectData - The current project hierarchical data.
+ * @param {Object} uiElements - Map of global DOM elements.
+ * @param {Function} renderViewCallback - Function to refresh the Gantt chart.
+ */
+export function editBar(taskFullId, projectData, uiElements, renderViewCallback) {
+    const targetTask = ganttOperations.findTask(projectData.roots, taskFullId);
+    if (!targetTask) {
+        return;
+    }
 
-    el.overlay.style.display = 'flex';
-    el.overlayTitle.innerText = `Edit: ${task.name}`;
-    el.overlayInput.value = task.name;
-    el.overlayInput.focus();
-    el.overlayInput.select();
-    el.overlayProgress.value = task.progress || 0;
+    // Find the flat task representation to access calculated dates (cascading dates)
+    const { flat: flattenedTasks } = ganttOperations.getFlattenedProject(
+        projectData.roots, 
+        { baseDate: projectData.baseDate }
+    );
+    const targetFlatTaskEntry = flattenedTasks.find(task => task.fullId === taskFullId);
+
+    // Show and focus the overlay
+    uiElements.overlay.style.display = 'flex';
+    uiElements.overlayTitle.innerText = `Edit: ${targetTask.name}`;
+    uiElements.overlayInput.value = targetTask.name;
+    uiElements.overlayInput.focus();
+    uiElements.overlayInput.select();
+    uiElements.overlayProgress.value = targetTask.progress || 0;
     
-    // Set the task ID field
-    el.overlayId.value = gantt.getTaskId(task);
+    // Set the task ID field (WBS part)
+    uiElements.overlayId.value = ganttOperations.getTaskId(targetTask);
     
     // Set the dependency field
-    if (el.overlayDep) {
-        el.overlayDep.value = task.dependency || '';
+    if (uiElements.overlayDep) {
+        uiElements.overlayDep.value = targetTask.dependency || '';
     }
 
-    document.getElementById('progress-val').innerText = `${task.progress || 0}%`;
-
-    const startInput = document.getElementById('overlay-start');
-    const endInput = document.getElementById('overlay-end');
-    if (startInput && endInput && flatTask) {
-        startInput.value = flatTask.calculatedStart ? flatTask.calculatedStart.split('T')[0] : '';
-        endInput.value = flatTask.calculatedEnd ? flatTask.calculatedEnd.split('T')[0] : '';
+    const progressValueLabel = document.getElementById('progress-val');
+    if (progressValueLabel) {
+        progressValueLabel.innerText = `${targetTask.progress || 0}%`;
     }
 
-    const palette = [
+    const startDateInputElement = document.getElementById('overlay-start');
+    const endDateInputElement = document.getElementById('overlay-end');
+    
+    if (startDateInputElement && endDateInputElement && targetFlatTaskEntry) {
+        startDateInputElement.value = targetFlatTaskEntry.calculatedStart ? targetFlatTaskEntry.calculatedStart.split('T')[0] : '';
+        endDateInputElement.value = targetFlatTaskEntry.calculatedEnd ? targetFlatTaskEntry.calculatedEnd.split('T')[0] : '';
+    }
+
+    const colorPaletteHexCodes = [
         'none', '#000000', '#5d4037', '#ff0000', '#ff9800', '#ffff00', 
         '#00ff00', '#2196f3', '#9c27b0', '#9e9e9e', '#ffffff'
     ];
-    const grid = document.getElementById('palette-grid');
-    grid.innerHTML = '';
-    let selectedColor = task.color || "none";
-    palette.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'palette-color';
-        if (c === 'none') {
-            div.classList.add('res-none');
-            div.title = "No Color";
-            div.style.display = 'flex';
-            div.style.alignItems = 'center';
-            div.style.justifyContent = 'center';
-            div.innerHTML = '<span style="color: #888; transform: rotate(45deg); font-weight: bold;">|</span>';
+    
+    const colorPaletteGridElement = document.getElementById('palette-grid');
+    colorPaletteGridElement.innerHTML = '';
+    
+    let currentlySelectedColor = targetTask.color || "none";
+    
+    colorPaletteHexCodes.forEach(colorHex => {
+        const colorSwatchElement = document.createElement('div');
+        colorSwatchElement.className = 'palette-color';
+        
+        if (colorHex === 'none') {
+            colorSwatchElement.classList.add('res-none');
+            colorSwatchElement.title = "No Color";
+            colorSwatchElement.style.display = 'flex';
+            colorSwatchElement.style.alignItems = 'center';
+            colorSwatchElement.style.justifyContent = 'center';
+            colorSwatchElement.innerHTML = '<span style="color: #888; transform: rotate(45deg); font-weight: bold;">|</span>';
         } else {
-            div.style.backgroundColor = c;
+            colorSwatchElement.style.backgroundColor = colorHex;
         }
         
-        if (c.toLowerCase() === selectedColor.toLowerCase()) div.classList.add('active');
-        div.onclick = () => {
-            selectedColor = c;
-            grid.querySelectorAll('.palette-color').forEach(x => x.classList.remove('active'));
-            div.classList.add('active');
+        if (colorHex.toLowerCase() === currentlySelectedColor.toLowerCase()) {
+            colorSwatchElement.classList.add('active');
+        }
+        
+        colorSwatchElement.onclick = () => {
+            currentlySelectedColor = colorHex;
+            colorPaletteGridElement.querySelectorAll('.palette-color').forEach(swatch => swatch.classList.remove('active'));
+            colorSwatchElement.classList.add('active');
         };
-        grid.appendChild(div);
+        
+        colorPaletteGridElement.appendChild(colorSwatchElement);
     });
 
-    const cleanup = () => {
-        el.overlay.style.display = 'none';
+    /**
+     * Closes the overlay and cleans up listeners.
+     */
+    const cleanupAndClose = () => {
+        uiElements.overlay.style.display = 'none';
         window.removeEventListener('keydown', handleKeyDown);
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            el.overlayOk.click();
-        } else if (e.key === 'Escape') {
-            el.overlayCancel.click();
+    /**
+     * Local keyboard handler for Enter/Escape within the overlay context.
+     * @param {KeyboardEvent} keyboardEvent 
+     */
+    const handleKeyDown = (keyboardEvent) => {
+        if (keyboardEvent.key === 'Enter') {
+            keyboardEvent.preventDefault();
+            uiElements.overlayOk.click();
+        } else if (keyboardEvent.key === 'Escape') {
+            uiElements.overlayCancel.click();
         }
     };
     
     window.addEventListener('keydown', handleKeyDown);
 
-    el.overlayOk.onclick = () => {
-        task.name = el.overlayInput.value;
-        task.progress = parseInt(el.overlayProgress.value);
-        task.color = selectedColor;
+    /**
+     * Finalizes the edit by updating the task object and refreshing the view.
+     */
+    uiElements.overlayOk.onclick = () => {
+        targetTask.name = uiElements.overlayInput.value;
+        targetTask.progress = parseInt(uiElements.overlayProgress.value);
+        targetTask.color = currentlySelectedColor;
         
         // Update task ID based on the task depth
-        const depth = flatTask ? flatTask.depth : 0;
-        gantt.setTaskId(task, el.overlayId.value, depth);
+        const taskHierarchyDepth = targetFlatTaskEntry ? targetFlatTaskEntry.depth : 0;
+        ganttOperations.setTaskId(targetTask, uiElements.overlayId.value, taskHierarchyDepth);
 
         // Update dependency
-        if (el.overlayDep) {
-            task.dependency = el.overlayDep.value;
+        if (uiElements.overlayDep) {
+            targetTask.dependency = uiElements.overlayDep.value;
         }
 
-        if (startInput && endInput) {
-            task.start = startInput.value;
-            const sDate = new Date(startInput.value + 'T00:00:00');
-            const eDate = new Date(endInput.value + 'T00:00:00');
-            if (!isNaN(sDate.getTime()) && !isNaN(eDate.getTime())) {
-                task.duration = Math.max(1, Math.ceil((eDate - sDate) / 86400000));
+        // Handle date overrides
+        if (startDateInputElement && endDateInputElement) {
+            targetTask.start = startDateInputElement.value;
+            const startDate = new Date(startDateInputElement.value + 'T00:00:00');
+            const endDate = new Date(endDateInputElement.value + 'T00:00:00');
+            
+            if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+                const dayDifference = Math.ceil((endDate - startDate) / 86400000);
+                targetTask.duration = Math.max(1, dayDifference);
             }
         }
         
-        render();
-        cleanup();
+        renderViewCallback();
+        cleanupAndClose();
 
-        // Notify app to persist state
+        // Notify app to persist state via dummy change if needed
         if (window.app && typeof window.app.updateTask === 'function') {
-            window.app.updateTask(fullId, 'dummy', null); 
+            window.app.updateTask(taskFullId, 'dummy', null); 
         }
     };
 
-    el.overlayCancel.onclick = () => {
-        cleanup();
+    uiElements.overlayCancel.onclick = () => {
+        cleanupAndClose();
     };
 }

@@ -1,57 +1,80 @@
-import { findParentAndIndex } from './findParentAndIndex.js';
-import { getFullIdOfParent } from './getFullIdOfParent.js';
-import { findTask } from './findTask.js';
-import { getChildren } from './getChildren.js';
-import { setChildren } from './setChildren.js';
+/**
+ * js/Rows/moveItem.js
+ * Comprehensive logic for moving a task to a different position in the project hierarchy.
+ * Supports nesting into a task, or placing before/after a target task.
+ */
+
+import { findParentAndIndex } from './search.js';
+import { getFullIdOfParent, findTask, getChildren, setChildren } from './index.js';
 
 /**
- * Moves an item within the hierarchical task tree.
+ * Moves a task from its current position to a new target location.
  * 
- * @param {Array} roots - The root tasks array.
- * @param {string} sourceId - The full ID of the task to move.
- * @param {string} targetId - The full ID of the target location.
- * @param {string} position - 'into', 'before', or 'after'.
- * @returns {boolean} - True if moved successfully.
+ * @param {Array<Object>} projectRoots - The top-level project hierarchy.
+ * @param {string} sourceTaskFullId - The ID of the task to be moved.
+ * @param {string} targetLocationFullId - The ID of the task that defines the destination.
+ * @param {string} relativePosition - Interaction mode ('into', 'before', or 'after').
+ * @returns {boolean} - Returns true if the task was successfully moved.
  */
-export function moveItem(roots, sourceId, targetId, position = 'into') {
-    if (sourceId === targetId) return false;
+export function moveItem(projectRoots, sourceTaskFullId, targetLocationFullId, relativePosition = 'into') {
+    // Avoid moving a task to its own position
+    if (sourceTaskFullId === targetLocationFullId) {
+        return false;
+    }
     
-    // Prevent moving a parent into its own child
-    if (targetId.startsWith(sourceId + '.')) return false;
+    // Prevent invalid recursive nesting (moving a parent into one of its own descendants)
+    if (targetLocationFullId.startsWith(sourceTaskFullId + '.')) {
+        return false;
+    }
 
-    // 1. Find the source and remove it
-    const { parent: sourceParent, index: sourceIdx } = findParentAndIndex(roots, sourceId);
-    if (!sourceParent || sourceIdx === -1) return false;
+    // 1. Locate and remove the task from its original parent collection
+    const { 
+        parent: sourceParentContainer, 
+        index: sourceTaskIndex 
+    } = findParentAndIndex(projectRoots, sourceTaskFullId);
     
-    const [taskToMove] = sourceParent.children.splice(sourceIdx, 1);
+    if (!sourceParentContainer || sourceTaskIndex === -1) {
+        return false;
+    }
     
-    // If the source parent is now empty, it's no longer a summary
-    const sourceParentFullId = getFullIdOfParent(roots, sourceId);
+    const [taskBeingMoved] = sourceParentContainer.children.splice(sourceTaskIndex, 1);
+    
+    // If the original parent is now empty, reset its type to a standard task
+    const sourceParentFullId = getFullIdOfParent(projectRoots, sourceTaskFullId);
     if (sourceParentFullId) {
-        const actualSourceParent = findTask(roots, sourceParentFullId);
-        if (actualSourceParent && sourceParent.children.length === 0) {
-            actualSourceParent.type = "task";
+        const sourceParentObject = findTask(projectRoots, sourceParentFullId);
+        if (sourceParentObject && sourceParentContainer.children.length === 0) {
+            sourceParentObject.type = "task";
         }
     }
 
-    // 2. Find the target and insert
-    if (position === 'into') {
-        const targetTask = findTask(roots, targetId);
-        if (!targetTask) return false;
-        
-        let targetChildren = getChildren(targetTask);
-        if (!targetChildren) {
-            targetChildren = [];
-            setChildren(targetTask, targetChildren);
+    // 2. Identify the target location and insert the task
+    if (relativePosition === 'into') {
+        const targetTaskObject = findTask(projectRoots, targetLocationFullId);
+        if (!targetTaskObject) {
+            return false;
         }
-        targetTask.type = "summary";
-        targetChildren.push(taskToMove);
-    } else {
-        const { parent: targetParent, index: targetIdx } = findParentAndIndex(roots, targetId);
-        if (!targetParent || targetIdx === -1) return false;
         
-        const insertAt = position === 'before' ? targetIdx : targetIdx + 1;
-        targetParent.children.splice(insertAt, 0, taskToMove);
+        let targetChildrenCollection = getChildren(targetTaskObject);
+        if (!targetChildrenCollection) {
+            targetChildrenCollection = [];
+            setChildren(targetTaskObject, targetChildrenCollection);
+        }
+        
+        targetTaskObject.type = "summary";
+        targetChildrenCollection.push(taskBeingMoved);
+    } else {
+        const { 
+            parent: targetParentContainer, 
+            index: targetTaskIndex 
+        } = findParentAndIndex(projectRoots, targetLocationFullId);
+        
+        if (!targetParentContainer || targetTaskIndex === -1) {
+            return false;
+        }
+        
+        const insertionIndex = (relativePosition === 'before') ? targetTaskIndex : targetTaskIndex + 1;
+        targetParentContainer.children.splice(insertionIndex, 0, taskBeingMoved);
     }
     
     return true;

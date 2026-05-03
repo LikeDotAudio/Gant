@@ -1,7 +1,8 @@
 import { getChildren } from './getChildren.js';
 import { setChildren } from './setChildren.js';
 import { getWeekNumber } from './getWeekNumber.js';
-import { getTaskId, setTaskId, refreshIds } from './managerId.js';
+import { getTaskId } from './getTaskId.js';
+import { setTaskId, refreshIds } from './managerId.js';
 import { flattenTasks } from './flattenTasks.js';
 import { getFlattenedProject } from './getFlattenedProject.js';
 import { findParentAndIndex, findTask, getFullIdOfParent, findFullId } from './search.js';

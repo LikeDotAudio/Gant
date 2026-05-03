@@ -1,6 +1,9 @@
 import { handleNodeDoubleClick } from './eventEdit.js';
-import { handleConnect, handleEdgesDelete, handleNodesDelete } from './events.js';
-import { handleMindMapKeyDown } from './keyboard.js';
+import { handleConnect, handleEdgesDelete, handleNodesDelete, handleNodeDragStop } from './events.js';
+import { handleKeyboard } from '../../actions/keyboard/keyboard.js';
+import { CustomNode } from './customNode.js';
+
+const nodeTypes = { default: CustomNode };
 
 /**
  * Navigator component for the Mind Map.
@@ -12,7 +15,11 @@ export function createFlowComponent(nodes, edges) {
 
     return () => {
         const onKeyDown = (event) => {
-            handleMindMapKeyDown(event, nodes, edges);
+            handleKeyboard(event.nativeEvent || event);
+        };
+
+        const onNodeDragStop = (event, node) => {
+            handleNodeDragStop(event, node, nodes);
         };
 
         return e('div', { 
@@ -23,10 +30,12 @@ export function createFlowComponent(nodes, edges) {
             e(ReactFlow, {
                 nodes: nodes,
                 edges: edges,
+                nodeTypes: nodeTypes,
                 fitView: true,
                 nodesConnectable: true,
                 nodesDraggable: true,
                 elementsSelectable: true,
+                onNodeDragStop: onNodeDragStop,
                 onNodeDoubleClick: handleNodeDoubleClick,
                 onConnect: handleConnect,
                 onEdgesDelete: handleEdgesDelete,

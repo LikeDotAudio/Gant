@@ -28,7 +28,7 @@ export function buildTree(flatTasks) {
 
         nodes.push({
             id: t.fullId,
-            data: { label: t.name },
+            data: { label: t.name, task: t },
             position: { 
                 x: xPos, 
                 y: relativeY * 85 

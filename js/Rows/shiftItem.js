@@ -1,51 +1,70 @@
-import { findParentAndIndex } from './findParentAndIndex.js';
-import { getFullIdOfParent } from './getFullIdOfParent.js';
-import { findTask } from './findTask.js';
-import { getChildren } from './getChildren.js';
-import { setChildren } from './setChildren.js';
+/**
+ * js/Rows/shiftItem.js
+ * Handles hierarchical promotion (outdent) and demotion (indent) of tasks.
+ */
+
+import { findParentAndIndex, getFullIdOfParent, findTask, getChildren, setChildren } from './index.js';
 
 /**
- * Changes the indentation level of a task (Promote/Demote).
+ * Changes the nesting level of a task by promoting it to a sibling of its parent, 
+ * or demoting it to a child of its previous sibling.
  * 
- * @param {Array} roots 
- * @param {string} fullId 
- * @param {string} direction - 'left' (promote) or 'right' (demote)
- * @returns {boolean}
+ * @param {Array<Object>} projectRoots - The top-level project hierarchy.
+ * @param {string} taskFullId - The dot-notated ID of the task to shift.
+ * @param {string} shiftDirection - Interaction mode ('left' for outdent/promote, 'right' for indent/demote).
+ * @returns {boolean} - Returns true if the hierarchy was modified.
  */
-export function shiftItem(roots, fullId, direction) {
-    const { parent, index } = findParentAndIndex(roots, fullId);
-    if (!parent || index === -1) return false;
+export function shiftItem(projectRoots, taskFullId, shiftDirection) {
+    const { 
+        parent: parentContainer, 
+        index: currentTaskIndex 
+    } = findParentAndIndex(projectRoots, taskFullId);
+    
+    if (!parentContainer || currentTaskIndex === -1) {
+        return false;
+    }
 
-    if (direction === 'right' && index > 0) {
-        // Demote: Move into the previous sibling
-        const prevSibling = parent.children[index - 1];
-        const [task] = parent.children.splice(index, 1);
+    if (shiftDirection === 'right' && currentTaskIndex > 0) {
+        // DEMOTE: Move the task to be a child of the preceding sibling
+        const previousSiblingTask = parentContainer.children[currentTaskIndex - 1];
+        const [taskToDemote] = parentContainer.children.splice(currentTaskIndex, 1);
         
-        let children = getChildren(prevSibling);
-        if (!children) {
-            children = [];
-            setChildren(prevSibling, children);
+        let siblingChildrenCollection = getChildren(previousSiblingTask);
+        if (!siblingChildrenCollection) {
+            siblingChildrenCollection = [];
+            setChildren(previousSiblingTask, siblingChildrenCollection);
         }
-        prevSibling.type = "summary";
-        children.push(task);
+        
+        previousSiblingTask.type = "summary";
+        siblingChildrenCollection.push(taskToDemote);
         return true;
-    } else if (direction === 'left') {
-        // Promote: Move to be a sibling of the current parent
-        const parentFullId = getFullIdOfParent(roots, fullId);
-        if (!parentFullId) return false;
-
-        const { parent: grandparent, index: parentIdx } = findParentAndIndex(roots, parentFullId);
-        if (!grandparent) return false;
-
-        const [task] = parent.children.splice(index, 1);
         
-        // Update old parent type if empty
-        const oldParent = findTask(roots, parentFullId);
-        if (oldParent && parent.children.length === 0) {
-            oldParent.type = "task";
+    } else if (shiftDirection === 'left') {
+        // PROMOTE: Move the task to be a sibling of its current parent
+        const parentTaskFullId = getFullIdOfParent(projectRoots, taskFullId);
+        if (!parentTaskFullId) {
+            return false; // Cannot outdent a root task
         }
 
-        grandparent.children.splice(parentIdx + 1, 0, task);
+        const { 
+            parent: grandparentContainer, 
+            index: parentTaskIndex 
+        } = findParentAndIndex(projectRoots, parentTaskFullId);
+        
+        if (!grandparentContainer) {
+            return false;
+        }
+
+        const [taskToPromote] = parentContainer.children.splice(currentTaskIndex, 1);
+        
+        // If the original parent is now empty, reset its type
+        const originalParentObject = findTask(projectRoots, parentTaskFullId);
+        if (originalParentObject && parentContainer.children.length === 0) {
+            originalParentObject.type = "task";
+        }
+
+        // Insert directly after the original parent in the grandparent's list
+        grandparentContainer.children.splice(parentTaskIndex + 1, 0, taskToPromote);
         return true;
     }
     

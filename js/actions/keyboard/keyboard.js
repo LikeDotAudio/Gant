@@ -29,7 +29,7 @@ export function handleKeyboard(event) {
         return;
     }
     
-    if (state.currentView !== 'visual') {
+    if (state.currentView !== 'visual' && state.currentView !== 'mindmap') {
         return;
     }
 

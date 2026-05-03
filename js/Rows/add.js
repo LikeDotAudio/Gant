@@ -1,20 +1,70 @@
-import * as gantt from './index.js';
+/**
+ * js/Rows/add.js
+ * Logic for inserting new tasks into the hierarchical project tree.
+ */
 
-export function addAbove(roots, selectedId) {
-    console.log(`[addAbove] Adding a new task above the selected one`, { selectedId });
-    if (!selectedId) return { changed: false };
-    const { parent, index } = gantt.findParentAndIndex(roots, selectedId);
-    if (!parent || index === -1) return { changed: false };
-    const newTask = { name: "New Task", duration: 4, progress: 0 };
-    parent.children.splice(index, 0, newTask);
-    return { changed: true, newTask };
+import { findParentAndIndex } from './search.js';
+
+/**
+ * Creates and inserts a new task directly above the specified task.
+ * 
+ * @param {Array<Object>} projectRoots - The top-level project hierarchy.
+ * @param {string} selectedTaskFullId - The ID of the task that will be below the new one.
+ * @returns {{changed: boolean, newTask?: Object}} Result indicating success and the new task object.
+ */
+export function addAbove(projectRoots, selectedTaskFullId) {
+    console.log(`[Rows/add] Inserting new task above: ${selectedTaskFullId}`);
+    
+    if (!selectedTaskFullId) {
+        return { changed: false };
+    }
+
+    const { parent: parentTask, index: targetIndex } = findParentAndIndex(projectRoots, selectedTaskFullId);
+    
+    if (!parentTask || targetIndex === -1) {
+        return { changed: false };
+    }
+
+    const newTaskObject = { 
+        name: "New Task", 
+        duration: 4, 
+        progress: 0 
+    };
+
+    // Insert at the same index, shifting the current task down
+    parentTask.children.splice(targetIndex, 0, newTaskObject);
+    
+    return { changed: true, newTask: newTaskObject };
 }
-export function addBelow(roots, selectedId) {
-    console.log(`[addBelow] Adding a new task below the selected one`, { selectedId });
-    if (!selectedId) return { changed: false };
-    const { parent, index } = gantt.findParentAndIndex(roots, selectedId);
-    if (!parent || index === -1) return { changed: false };
-    const newTask = { name: "New Task", duration: 4, progress: 0 };
-    parent.children.splice(index + 1, 0, newTask);
-    return { changed: true, newTask };
+
+/**
+ * Creates and inserts a new task directly below the specified task.
+ * 
+ * @param {Array<Object>} projectRoots - The top-level project hierarchy.
+ * @param {string} selectedTaskFullId - The ID of the task that will be above the new one.
+ * @returns {{changed: boolean, newTask?: Object}} Result indicating success and the new task object.
+ */
+export function addBelow(projectRoots, selectedTaskFullId) {
+    console.log(`[Rows/add] Inserting new task below: ${selectedTaskFullId}`);
+    
+    if (!selectedTaskFullId) {
+        return { changed: false };
+    }
+
+    const { parent: parentTask, index: targetIndex } = findParentAndIndex(projectRoots, selectedTaskFullId);
+    
+    if (!parentTask || targetIndex === -1) {
+        return { changed: false };
+    }
+
+    const newTaskObject = { 
+        name: "New Task", 
+        duration: 4, 
+        progress: 0 
+    };
+
+    // Insert at the next index
+    parentTask.children.splice(targetIndex + 1, 0, newTaskObject);
+    
+    return { changed: true, newTask: newTaskObject };
 }
