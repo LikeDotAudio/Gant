@@ -4,6 +4,8 @@ import { showStatus } from '../StatusBar/Status_update.js';
 import * as timeline from '../timeline/index.js'; 
 import { renderSpreadsheet } from '../views/spreadsheet.js';
 import { renderPrinterView } from '../views/printer.js';
+import { renderMindMap } from '../views/mindmap.js';
+
 // Web worker reference for offloading expensive layout calculations.
 let workerRef = null;
 export function setWorker(w) { workerRef = workerRef || w; }
@@ -35,6 +37,8 @@ export function render(updateFlat = true) {
             renderSpreadsheet(state.projectData, document.getElementById('view-spreadsheet'));
         } else if (state.currentView === 'printer') {
             renderPrinterView(state.projectData, document.getElementById('view-printer'));
+        } else if (state.currentView === 'mindmap') {
+            renderMindMap(state.projectData, document.getElementById('view-mindmap'), state.flatTasks);
         }
         
         // Update status bar with selection details

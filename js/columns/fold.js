@@ -35,36 +35,6 @@ export function foldToLevel(roots, foldedIds, targetDepth) {
 }
 
 /**
- * Smart folding for keyboard navigation.
- * ArrowLeft: Fold selected item. If already folded or no children, select parent.
- * ArrowRight: Unfold selected item.
- */
-export function keyboardFold(roots, foldedIds, selectedId, direction) {
-    const task = gantt.findTask(roots, selectedId);
-    if (!task) return { changed: false, newSelection: null };
-    
-    const hasChildren = gantt.getChildren(task)?.length > 0;
-    
-    if (direction === 'left') {
-        if (hasChildren && !foldedIds.has(selectedId)) {
-            foldedIds.add(selectedId);
-            return { changed: true, newSelection: null };
-        } else {
-            // Select parent
-            const parentId = gantt.getFullIdOfParent(roots, selectedId);
-            return { changed: false, newSelection: parentId };
-        }
-    } else if (direction === 'right') {
-        if (hasChildren && foldedIds.has(selectedId)) {
-            foldedIds.delete(selectedId);
-            return { changed: true, newSelection: null };
-        }
-    }
-    
-    return { changed: false, newSelection: null };
-}
-
-/**
  * Toggles an individual item's folded state.
  */
 export function toggleItem(foldedIds, fullId) {

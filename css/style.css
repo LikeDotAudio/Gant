@@ -407,8 +407,22 @@ button:hover { background: #4a5057; }
     .header, .col-toggles, #status, .no-print, #gantt-navigator { display: none !important; }
     #editor-container { position: absolute; top: 0; left: 0; width: 100%; height: auto; overflow: visible !important; }
     .view-content { display: none !important; overflow: visible !important; }
-    #view-printer.active { display: block !important; overflow: visible !important; }
+    .view-content.active { display: block !important; overflow: visible !important; }
+    
+    /* Force white background for all printed views */
+    body, #editor-container, .view-content.active, #view-spreadsheet, #view-mindmap { 
+        background: white !important; 
+        color: black !important; 
+        overflow: visible !important;
+    }
+
+    /* Spreadsheet specific print overrides */
+    #view-spreadsheet table { color: black !important; border-color: #ccc !important; }
+    #view-spreadsheet th { background: #eee !important; color: black !important; border-color: #ccc !important; }
+    #view-spreadsheet td { border-color: #ccc !important; }
+    #view-spreadsheet tr { background: transparent !important; color: black !important; border-bottom: 1px solid #eee !important; }
+
     .printer-view-content { padding: 0; border: none !important; overflow: visible !important; }
     #view-printer { border: none !important; overflow: visible !important; }
-    body { overflow: visible !important; background: white !important; }
+    body { overflow: visible !important; }
 }

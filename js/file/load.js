@@ -18,7 +18,7 @@ export async function openFile(state, el, render, showStatus) {
             if (!state.projectData.baseDate) {
                 state.projectData.baseDate = new Date().toISOString().split('T')[0];
             }
-            el.activeFilename.innerText = file.name;
+            el.activeFilename.innerText = `Gan't Do It: ${file.name}`;
             render();
             showStatus(`Loaded: ${file.name}`);
         }

@@ -27,7 +27,7 @@ export function loadFromPath(renderCallback) {
             state.projectData = JSON.parse(savedData);
             gantt.refreshIds(state.projectData.roots);
             renderJSONView(state.projectData, el.jsonEditor);
-            el.activeFilename.innerText = `Project: ${state.projectPath}`;
+            el.activeFilename.innerText = `Gan't Do It: ${state.projectPath}`;
             renderCallback(true);
             showStatus(`Loaded "${state.projectPath}" from local storage.`);
         } catch (e) {
@@ -45,7 +45,7 @@ export function loadSampleData(renderCallback) {
             state.projectData = data;
             gantt.refreshIds(state.projectData.roots);
             renderJSONView(data, el.jsonEditor);
-            el.activeFilename.innerText = "sample.json (Default)";
+            el.activeFilename.innerText = "Gan't Do It: sample.json (Default)";
             renderCallback(true);
         })
         .catch(err => {

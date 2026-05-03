@@ -1,4 +1,4 @@
-import { api } from '../app-api/index.js';
+import { api } from '../Menu/index.js';
 
 /**
  * Initializes the global window.app object.

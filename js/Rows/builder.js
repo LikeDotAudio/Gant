@@ -1,6 +1,20 @@
 import { getChildren } from './getChildren.js';
 import { getTaskId } from './id-manager.js';
-export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, result = [], inheritedColor = null) {
+
+const RESISTOR_COLORS = [
+    "#000000", // 0: Black
+    "#5d4037", // 1: Brown
+    "#ff0000", // 2: Red
+    "#ff9800", // 3: Orange
+    "#ffff00", // 4: Yellow
+    "#00ff00", // 5: Green
+    "#2196f3", // 6: Blue
+    "#9c27b0", // 7: Violet
+    "#9e9e9e", // 8: Grey
+    "#ffffff"  // 9: White
+];
+
+export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, result = []) {
     const { rootId = null, baseDate = null, foldedIds = new Set() } = options;
     const globalBase = (baseDate && typeof baseDate === 'string' && !isNaN(new Date(baseDate).getTime())) 
         ? baseDate 
@@ -25,7 +39,11 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
         const childrenArr = getChildren(t);
         const hasChildren = (childrenArr && childrenArr.length > 0);
         const isFolded = safeFoldedIds.has(fullId);
-        const taskColor = t.color || inheritedColor || '#f4902c';
+        
+        // Use specified color, or default to resistor code by depth (Root = 1, Parent = 2, etc)
+        const depthColor = RESISTOR_COLORS[(depth + 1) % 10];
+        const taskColor = t.color || depthColor;
+
         const taskEntry = { 
             name: t.name,
             progress: t.progress,
@@ -52,7 +70,7 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
                 rootId: parts[0],
                 baseDate: taskEntry.calculatedStart,
                 foldedIds: safeFoldedIds
-            }, result, taskColor);
+            }, result);
             const children = result.slice(startIdx + 1);
             if (children.length > 0) {
                 const validDates = children

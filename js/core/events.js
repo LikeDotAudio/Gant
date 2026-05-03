@@ -3,17 +3,17 @@ import { state } from './state.js';
 import { render } from './render.js';
 import { updateNav } from './worker-client.js';
 import { showStatus } from '../StatusBar/Status_update.js';
-import { handleKeyboard } from '../handlers/keyboard.js';
-import { handleGanttClick } from '../handlers/gantt-click.js';
-import { handleGanttChange } from '../handlers/gantt-change.js';
-import { handleGanttMouseDown } from '../handlers/gantt-mousedown.js';
-import { handleGanttDblClick } from '../handlers/gantt-dblclick.js';
+import { handleKeyboard } from '../handlers/keyboard/keyboard.js';
+import { handleMouseClick } from '../handlers/mouse/mouseClick.js';
+import { handleMouseChange } from '../handlers/mouse/mouseChange.js';
+import { handleMouseMouseDown } from '../handlers/mouse/mouseMouseDown.js';
+import { handleMouseDblClick } from '../handlers/mouse/mouseDblClick.js';
 import { 
-    handleGanttDragStart, 
-    handleGanttDragOver, 
-    handleGanttDragLeave, 
-    handleGanttDrop 
-} from '../handlers/gantt-drag.js';
+    handleMouseDragStart, 
+    handleMouseDragOver, 
+    handleMouseDragLeave, 
+    handleMouseDrop 
+} from '../handlers/mouse/mouseDrag.js';
 export function setupEventListeners() {
     window.addEventListener('keydown', handleKeyboard);
     el.overlayCancel.onclick = () => { el.overlay.style.display = 'none'; };
@@ -66,10 +66,10 @@ export function setupEventListeners() {
                 if (e.button === 1) { isPanning = false; container.style.cursor = 'auto'; }
             });
         }
-        el.ganttChart.addEventListener('click', handleGanttClick);
-        el.ganttChart.addEventListener('change', handleGanttChange);
-        el.ganttChart.addEventListener('mousedown', handleGanttMouseDown);
-        el.ganttChart.addEventListener('dblclick', handleGanttDblClick);
+        el.ganttChart.addEventListener('click', handleMouseClick);
+        el.ganttChart.addEventListener('change', handleMouseChange);
+        el.ganttChart.addEventListener('mousedown', handleMouseMouseDown);
+        el.ganttChart.addEventListener('dblclick', handleMouseDblClick);
         el.ganttChart.addEventListener('mousemove', (e) => {
             const isTimeline = e.target.closest('.gantt-timeline') || e.target.closest('.task-bars-cell');
             const hoverLine = el.ganttChart.querySelector('.hover-line');
@@ -79,10 +79,10 @@ export function setupEventListeners() {
                 hoverLine.style.display = 'block';
             } else if (hoverLine) { hoverLine.style.display = 'none'; }
         });
-        el.ganttChart.addEventListener('dragstart', handleGanttDragStart);
-        el.ganttChart.addEventListener('dragover', handleGanttDragOver);
-        el.ganttChart.addEventListener('dragleave', handleGanttDragLeave);
-        el.ganttChart.addEventListener('drop', handleGanttDrop);
+        el.ganttChart.addEventListener('dragstart', handleMouseDragStart);
+        el.ganttChart.addEventListener('dragover', handleMouseDragOver);
+        el.ganttChart.addEventListener('dragleave', handleMouseDragLeave);
+        el.ganttChart.addEventListener('drop', handleMouseDrop);
         el.ganttChart.addEventListener('mouseover', (e) => {
             const bar = e.target.closest('.bar');
             if (bar) { const row = bar.closest('.gantt-row'); if (row) row.draggable = false; }

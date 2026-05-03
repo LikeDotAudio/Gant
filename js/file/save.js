@@ -16,7 +16,7 @@ export async function saveFileAs(state, el, showStatus) {
         const file = await fs.saveFileAs(JSON.stringify(state.projectData, null, 2));
         if (file) {
             state.currentFileHandle = file.handle;
-            el.activeFilename.innerText = file.name;
+            el.activeFilename.innerText = `Gan't Do It: ${file.name}`;
             showStatus(`Saved as: ${file.name}`);
         }
     } catch (err) {

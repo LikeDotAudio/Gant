@@ -66,5 +66,13 @@ export function renderSpreadsheet(projectData, container, cachedFlat = null) {
         });
         h += `</tbody></table>`;
     }
-    container.innerHTML = `<div style="padding: 10px; overflow: auto; height: 100%;">${h}</div>`;
+
+    const controls = `
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;" class="no-print">
+            <button onclick="window.app.exportCSV()" style="background: #2d7a4b; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold;">📥 Export as CSV</button>
+            <button onclick="window.print()" style="background: #3e444a; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold;">🖨️ Print Spreadsheet</button>
+        </div>
+    `;
+
+    container.innerHTML = `<div style="padding: 20px; overflow: auto; height: 100%; background: #1a1c1e;">${controls}${h}</div>`;
 }

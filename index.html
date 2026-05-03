@@ -8,9 +8,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gantt WBS Workspace - Dark Mode</title>
+    <title>Gan't Do It!</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Added React, ReactDOM, and ReactFlow dependencies for Mind Map View -->
+    <link rel="stylesheet" href="https://unpkg.com/reactflow@11.10.3/dist/style.css" />
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/reactflow@11.10.3/dist/umd/index.js"></script>
+
     <script>
         window.app = {
             _loading: true,
@@ -51,16 +58,30 @@
                     </div>
                 </div>
                 <div class="menu-group">
+                    <div class="menu-label">EDIT</div>
+                    <div class="menu-content">
+                        <button onclick="window.app.undo()">↩️ Undo (Ctrl+Z)</button>
+                        <button onclick="window.app.clearUndo()">🧹 Clear Undo History</button>
+                        <hr style="border:none; border-top:1px solid #444; margin:5px 0;">
+                        <button onclick="window.app.addAbove()">➕ Add Task Above</button>
+                        <button onclick="window.app.addBelow()">➕ Add Task Below (Ctrl+Enter)</button>
+                        <button onclick="window.app.confirmDeleteSelected()" style="color: #ff6b6b;">🗑️ Delete Selected (Del)</button>
+                    </div>
+                </div>
+                <div class="menu-group">
                     <div class="menu-label">VIEW</div>
                     <div class="menu-content">
                         <button onclick="window.app.setView('visual')">📊 View as WBS</button>
                         <button onclick="window.app.setView('spreadsheet')">📋 View as Spreadsheet</button>
                         <button onclick="window.app.setView('printer')">🖨️ Printer Friendly</button>
                         <button onclick="window.app.setView('json')">📄 View as JSON</button>
+                        <!-- Added Mind Map Button -->
+                        <button onclick="window.app.setView('mindmap')">🧠 View as Mind Map</button>
                     </div>
                 </div>
             </div>
-            <h2 id="active-filename">Gantt Workspace</h2>
+            <h2 id="active-filename">Gan't Do It!</h2>
+            <div id="version-display" style="font-size: 10px; color: #666;">Version: 20260503.1154</div>
 
             <div class="zoom-controls">
                 <span>Zoom:</span>
@@ -114,11 +135,6 @@
                 <span>Days</span>
             </div>
             <span style="border-left: 1px solid #444; height: 12px; margin: 0 5px;"></span>
-            <div class="zoom-controls" style="margin-left: auto; gap: 10px;">
-                <button onclick="window.app.addAbove()" style="background: #2d7a4b; color: white;">➕ Add Above</button>
-                <button onclick="window.app.addBelow()" style="background: #2d7a4b; color: white;">➕ Add Below</button>
-                <button onclick="window.app.confirmDeleteSelected()" style="background: #7a2d2d; color: white;">🗑️ Delete</button>
-            </div>
         </div>
 
         <div id="editor-container">
@@ -126,6 +142,8 @@
             <div id="view-spreadsheet" class="view-content"></div>
             <div id="view-printer" class="view-content"></div>
             <div id="view-json" class="view-content"><textarea id="json-editor"></textarea></div>
+            <!-- Added container for the Mind Map View -->
+            <div id="view-mindmap" class="view-content" style="flex-grow: 1;"></div>
         </div>
 
         <div id="status">
