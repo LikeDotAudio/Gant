@@ -5,7 +5,33 @@
 
 # Gan't Do it
 
-A procrastrination organizer / productivity prioritizer.
+A procrastination organizer / productivity prioritizer.
+
+## 🎭 The Gantt Chart: A Reality Check
+
+- **Task List** = **T**otally **A**rbitrary **S**eries of **K**nown **L**ies **I**n **S**equential **T**ime
+  *Because let's face it, half of these incredibly detailed line items are getting completely scrapped by Phase 2 anyway.*
+
+- **Timeline** = **T**ime **I**s **M**erely **E**stimated, **L**ikely **I**gnored, **N**ever **E**xact
+  *The magical horizontal axis where project managers pretend they know exactly what an engineer will be doing at 3:15 PM on a Thursday six months from now.*
+
+- **Task Bars** = **B**ullshit **A**pproximations **R**equiring **S**tretching
+  *Those brightly colored rectangles that you will inevitably and quietly drag to the right on a Friday afternoon when nobody is looking.*
+
+- **Milestones** = **M**irages **I**nvolving **L**ots of **E**xtra **S**tress, **T**ears, **O**r **N**ew **E**xcuses
+  *Usually marked with a diamond shape, which is fitting because trying to actually hit one requires intense, crushing pressure and costs way too much money.*
+
+- **Dependencies** = **D**omino **E**ffects **P**roducing **E**ndless **N**ew **D**elays
+  *The little connecting arrows that mathematically prove why Steve in accounting is the sole reason the entire project is three months late.*
+
+- **Progress Indicators** = **P**olitely **R**eported **O**utright **G**uesses **R**egarding **E**xpected **S**uccess
+  *Ah, the progress bar shading. Because according to the universal laws of project management, a task is always mysteriously "90% done" for three straight weeks.*
+
+- **Current Date Marker** = **T**he **O**bvious **D**oom **A**pproaching **Y**ou
+  *That unforgiving, bright red vertical line of judgment that slices through the chart just to visually scream, "Look how far behind schedule you are, Anthony."*
+
+- **Resource Labels** = **R**andom **E**mployees **S**acrificed **O**nly **U**ntil **R**eality **C**auses **E**xhaustion
+  *The tiny text next to the bar where we officially document exactly who will be taking the fall during the project post-mortem.*
 
 ## 🚀 Key Features
 

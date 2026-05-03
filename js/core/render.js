@@ -4,7 +4,7 @@ import { showStatus } from '../StatusBar/Status_update.js';
 import * as timeline from '../timeline/index.js'; 
 import { renderSpreadsheet } from '../views/spreadsheet.js';
 import { renderPrinterView } from '../views/printer.js';
-import { renderMindMap } from '../views/mindmap.js';
+import { renderMindMap } from '../views/MindMap/index.js';
 
 // Web worker reference for offloading expensive layout calculations.
 let workerRef = null;

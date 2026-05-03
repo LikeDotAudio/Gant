@@ -35,7 +35,10 @@
             toggleJsonView() { this._notify(); },
             toggleCol() { this._notify(); },
             zoom() { this._notify(); },
-            foldToLevel() { this._notify(); }
+            foldToLevel() { this._notify(); },
+            openWebsite() { this._notify(); },
+            openGithub() { this._notify(); },
+            toggleLogger() { this._notify(); }
         };
     </script>
 </head>
@@ -65,6 +68,8 @@
                         <hr style="border:none; border-top:1px solid #444; margin:5px 0;">
                         <button onclick="window.app.addAbove()">➕ Add Task Above</button>
                         <button onclick="window.app.addBelow()">➕ Add Task Below (Ctrl+Enter)</button>
+                        <button onclick="window.app.editTask()">✏️ Edit Selected Task (F2)</button>
+                        <button onclick="window.app.addMilestone()">🚩 Add Milestone</button>
                         <button onclick="window.app.confirmDeleteSelected()" style="color: #ff6b6b;">🗑️ Delete Selected (Del)</button>
                     </div>
                 </div>
@@ -79,9 +84,21 @@
                         <button onclick="window.app.setView('mindmap')">🧠 View as Mind Map</button>
                     </div>
                 </div>
+                <div class="menu-group">
+                    <div class="menu-label">ABOUT</div>
+                    <div class="menu-content">
+                        <button onclick="window.app.openWebsite()">🌐 Like.audio</button>
+                        <button onclick="window.app.openGithub()">💻 GitHub Repository</button>
+                        <hr style="border:none; border-top:1px solid #444; margin:5px 0;">
+                        <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; color: #ccc; font-size: 12px; gap: 8px;">
+                            <input type="checkbox" onchange="window.app.toggleLogger(this.checked)" style="cursor: pointer;">
+                            Enable Logger
+                        </label>
+                    </div>
+                </div>
             </div>
             <h2 id="active-filename">Gan't Do It!</h2>
-            <div id="version-display" style="font-size: 10px; color: #666;">Version: 20260503.1206</div>
+            <div id="version-display" style="font-size: 10px; color: #666;">Version: 20260503.1234</div>
 
             <div class="zoom-controls">
                 <span>Zoom:</span>

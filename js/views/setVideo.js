@@ -3,7 +3,7 @@ import { render } from '../../core/render.js';
 import { parseJSONView, renderJSONView } from '../../views/json-view.js';
 import { renderSpreadsheet } from '../../views/spreadsheet.js';
 import { renderPrinterView } from '../../views/printer.js';
-import { renderMindMap } from '../../views/mindmap.js'; // <-- Add this import
+import { renderMindMap } from '../../views/MindMap/index.js'; // <-- Add this import
 import { el } from '../../core/elements.js';
 
 export function setView(view) {

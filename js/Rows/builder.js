@@ -41,6 +41,7 @@ export function flattenTasks(tasks, depth = 0, parentId = "", options = {}, resu
         const isFolded = safeFoldedIds.has(fullId);
         
         // Use specified color, or default to resistor code by depth (Root = 1, Parent = 2, etc)
+        // Wraps around every 10 levels using the last digit (modulo)
         const depthColor = RESISTOR_COLORS[(depth + 1) % 10];
         const taskColor = t.color || depthColor;
 

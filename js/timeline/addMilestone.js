@@ -1,18 +1,42 @@
 export function addMilestone(e, minDateStr, projectData, zoomLevel, el, render) {
-    e.stopPropagation();
-    const timeline = e.target.closest('.gantt-timeline');
-    if (!timeline || !minDateStr) return;
-    const rect = timeline.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const mDate = new Date(minDateStr);
+    if (e && e.stopPropagation) e.stopPropagation();
+    
+    let mDate;
+    const timeline = e?.target?.closest?.('.gantt-timeline');
+    
+    if (timeline && minDateStr) {
+        const rect = timeline.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        mDate = new Date(minDateStr);
+        if (!isNaN(mDate.getTime())) {
+            mDate.setDate(mDate.getDate() + Math.floor(x / zoomLevel));
+        }
+    }
+
+    if (!mDate || isNaN(mDate.getTime())) {
+        // Fallback: use project base date or today
+        mDate = new Date(projectData.baseDate || new Date());
+    }
+
     if (isNaN(mDate.getTime())) return;
-    mDate.setDate(mDate.getDate() + Math.floor(x / zoomLevel));
-    if (isNaN(mDate.getTime())) return;
+    
     el.overlay.style.display = 'flex';
     el.overlayTitle.innerText = "Milestone Name";
+    const overlayFields = el.overlay.querySelector('#overlay-fields');
+    if (overlayFields) {
+        Array.from(overlayFields.children).forEach(child => {
+            if (child.innerText.includes('Name:')) {
+                child.style.display = 'flex';
+            } else {
+                child.style.display = 'none';
+            }
+        });
+    }
+    
     el.overlayInput.value = "New Milestone";
     el.overlayInput.focus();
     el.overlayInput.select();
+    
     el.overlayOk.onclick = () => {
         if (el.overlayInput.value) {
             if (!projectData.milestones) projectData.milestones = [];
@@ -26,6 +50,18 @@ export function addMilestone(e, minDateStr, projectData, zoomLevel, el, render) 
                 window.app.updateTask('milestone', 'dummy', null); 
             }
         }
-        el.overlay.style.display = 'none';
+        resetOverlay(el);
     };
+
+    el.overlayCancel.onclick = () => {
+        resetOverlay(el);
+    };
+}
+
+function resetOverlay(el) {
+    el.overlay.style.display = 'none';
+    const overlayFields = el.overlay.querySelector('#overlay-fields');
+    if (overlayFields) {
+        Array.from(overlayFields.children).forEach(child => child.style.display = '');
+    }
 }

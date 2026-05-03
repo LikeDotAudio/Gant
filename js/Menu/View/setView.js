@@ -3,7 +3,7 @@ import { render } from '../../core/render.js';
 import { parseJSONView, renderJSONView } from '../../views/json-view.js';
 import { renderSpreadsheet } from '../../views/spreadsheet.js';
 import { renderPrinterView } from '../../views/printer.js';
-import { renderMindMap } from '../../views/mindmap.js';
+import { renderMindMap } from '../../views/MindMap/index.js';
 import { el } from '../../core/elements.js';
 
 export function setView(view) {
@@ -36,4 +36,10 @@ export function setView(view) {
     else if (view === 'printer') renderPrinterView(state.projectData, document.getElementById('view-printer'));
     else if (view === 'mindmap') renderMindMap(state.projectData, document.getElementById('view-mindmap'), state.flatTasks);
     else render();
+
+    // Show/Hide Navigator based on view
+    const nav = document.getElementById('gantt-navigator');
+    if (nav) {
+        nav.style.display = (view === 'visual') ? 'block' : 'none';
+    }
 }

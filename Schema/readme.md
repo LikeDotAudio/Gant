@@ -1,6 +1,6 @@
 # Gan't Do it
 
-A procrastrination organizer / productivity prioritizer for managing complex life and home projects. It features a hierarchical task management system with visual, spreadsheet, and JSON views.
+A procrastination organizer / productivity prioritizer for managing complex life and home projects. It features a hierarchical task management system with visual, spreadsheet, and JSON views.
 
 ## Project Structure
 

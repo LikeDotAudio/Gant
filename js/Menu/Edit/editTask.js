@@ -4,5 +4,10 @@ import { render } from '../../core/render.js';
 import * as pb from '../../progressbar/index.js';
 
 export function editTask(fullId, e) { 
-    pb.editBar(fullId, state.projectData, el, render); 
+    if (!fullId && state.selectedTaskFullIds.size > 0) {
+        fullId = Array.from(state.selectedTaskFullIds)[0];
+    }
+    if (fullId) {
+        pb.editBar(fullId, state.projectData, el, render); 
+    }
 }
